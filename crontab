@@ -1,0 +1,7 @@
+#10 4 * * * kill -9 `ps -ef | grep plexmediaplayer | grep -v grep | awk '{print $2}'`
+#15 4 * * * export DISPLAY=:0 && /usr/bin/plexmediaplayer
+#*/10 * * * * /bkp/fixPrivilegesMovies.sh
+0 * * * * rsync -avx /bkp/docker /bkp/auth /bkp-ssd/ --delete
+*/10 * * * * . /bkp/opensubs_user.env; subliminal --opensubtitles $OP_USERNAME $OP_PASSWORD download -l en /download/qbittorrent
+*/10 * * * * . /bkp/opensubs_user.env; subliminal --opensubtitles $OP_USERNAME $OP_PASSWORD download -l es /download/qbittorrent
+0 5 * * 0 cd ~nahuel/koko && docker compose pull && docker compose up -d --force-recreate qbittorrent plex uptime-kuma && docker system prune -a -f

@@ -1,0 +1,268 @@
+version: '3.8'
+
+volumes:
+  transcode_plex:
+    driver: local
+
+networks:
+  qbittorrent:
+    driver: bridge
+  gitea:
+    driver: bridge
+  uptime-kuma:
+    driver: bridge
+  koko-dashboard-ui:
+    driver: bridge
+  koko-dashboard-api:
+    driver: bridge
+  vaultwarden:
+    driver: bridge
+  pihole:
+    driver: bridge
+  cadvisor:
+    driver: bridge
+  iperf3:
+    driver: bridge
+  test:
+    driver: bridge
+
+services:
+
+  ### APPS ###
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Warsaw
+      - WEBUI_PORT=8081
+    volumes:
+      - /bkp/docker/qbittorrentconfig:/config
+      - /download/qbittorrent:/downloads
+    networks:
+      - qbittorrent
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qb.wyppu.com`)"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
+      - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=godaddy"
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker:latest
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Warsaw
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    volumes:
+      - /bkp/docker/plexconfig:/config
+      - transcode_plex:/transcode
+      - /download:/download
+    network_mode: host
+    labels:
+      - "traefik.enable=true" # Actually, it's not working without port (plex.wyppu.com:32400) because plex doesn't like reverse proxies
+      - "traefik.http.routers.plex.rule=Host(`plex.wyppu.com`)"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+      - "traefik.http.routers.plex.entrypoints=websecure"
+      - "traefik.http.routers.plex.tls.certresolver=godaddy"
+
+  gitea:
+    image: gitea/gitea:1.17.3
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    volumes:
+      - /bkp/docker/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - gitea
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`git.wyppu.com`)"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.tls.certresolver=godaddy"
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - /bkp/docker/uptime-kuma:/app/data
+    networks:
+      - uptime-kuma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.wyppu.com`)"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=godaddy"
+
+  koko-web:
+    image: matandomuertos/koko-dashboard-web:latest
+    container_name: koko-web
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/urls.yml:/usr/share/nginx/html/config/urls.yml
+    networks:
+      - koko-dashboard-ui
+      - koko-dashboard-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`koko.wyppu.com`)"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=80"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=godaddy"
+
+  koko-api:
+    image: matandomuertos/koko-dashboard-api:latest
+    container_name: koko-api
+    restart: unless-stopped
+    networks:
+      - koko-dashboard-api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  vaultwarden:
+    image: vaultwarden/server:1.27.0-alpine
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - WEBSOCKET_ENABLED=false
+      - SIGNUPS_ALLOWED=false
+    volumes:
+      - /bkp/docker/vaultwarden:/data
+    networks:
+      - vaultwarden
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vw.wyppu.com`)"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=godaddy"
+
+  ### Networking ###
+  pihole:
+    image: pihole/pihole:2023.01.10
+    container_name: pihole
+    restart: always
+    environment:
+      - TZ=Europe/Warsaw
+      - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
+      - PIHOLE_DNS_=8.8.8.8;8.8.4.4
+      - FTLCONF_LOCAL_IPV4=192.168.31.167
+      - DNSMASQ_LISTENING=all
+      - QUERY_LOGGING=false
+    volumes:
+      - /bkp/docker/pi-hole/pihole:/etc/pihole
+      - /bkp/docker/pi-hole/dnsmasq:/etc/dnsmasq.d
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    networks:
+      - pihole
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.wyppu.com`)"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+      - "traefik.http.routers.pihole.entrypoints=websecure"
+      - "traefik.http.routers.pihole.tls.certresolver=godaddy"
+
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    restart: always
+    environment:
+      - GODADDY_API_KEY=${TRAEFIK_GODADDY_API_KEY}
+      - GODADDY_API_SECRET=${TRAEFIK_GODADDY_API_SECRET}
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.godaddy.acme.dnschallenge=true"
+      - "--certificatesResolvers.godaddy.acme.dnsChallenge.provider=godaddy"
+      - "--certificatesResolvers.godaddy.acme.dnsChallenge.delayBeforeCheck=0"
+      - "--certificatesresolvers.godaddy.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
+      - "--certificatesresolvers.godaddy.acme.email=${TRAEFIK_GODADDY_EMAIL}"
+      - "--certificatesresolvers.godaddy.acme.storage=/certs/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /bkp/docker/traefik/certs:/certs
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    networks:
+      - qbittorrent
+      - gitea
+      - uptime-kuma
+      - koko-dashboard-ui
+      - koko-dashboard-api
+      - vaultwarden
+      - pihole
+      - cadvisor
+      - iperf3
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`tk.wyppu.com`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.treafik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=godaddy"
+
+  ### Monitoring ###
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - cadvisor
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cadvisor.rule=Host(`c.wyppu.com`)"
+      - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
+      - "traefik.http.routers.cadvisor.entrypoints=websecure"
+      - "traefik.http.routers.cadvisor.tls.certresolver=godaddy"
+
+  iperf3: # To use it, from client, run: `iperf3 -c koko`
+    image: networkstatic/iperf3
+    container_name: iperf3
+    restart: unless-stopped
+    networks:
+      - iperf3
+    command: -s
+    ports:
+      - "5201:5201"
+
+  ### Test ###
+  test:
+    image: nginxdemos/hello
+    container_name: test
+    restart: unless-stopped
+    networks:
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`test.wyppu.com`)"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+      - "traefik.http.routers.test.entrypoints=websecure"
+      - "traefik.http.routers.test.tls.certresolver=godaddy"
+
