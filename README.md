@@ -64,7 +64,7 @@ $ sudo ./init.sh
 ## What's next
 There are a few more apps that could be tested and added to the init script:
 - [k3s](https://github.com/k3s-io/k3s)
-- Prometheus/Grafana/Loki (right now the monitoring tool is [uptime-kuma](https://github.com/louislam/uptime-kuma))
+- Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma)
 - [Portainer](https://github.com/portainer/portainer)
 - [Home Assistant](https://github.com/home-assistant)
 - [FileBroswer](https://github.com/filebrowser/filebrowser)
