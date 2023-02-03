@@ -71,4 +71,4 @@ There are a few more apps that could be tested and added to the init script:
 
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
-- Traefik shows an error (in debug mode) with `uk.wyppu.com` even if it's not configured
+
