@@ -1,5 +1,5 @@
 # Koko
-This repo has the files needed to install and configure Koko in only few minutes.
+This repo has the files needed to install and configure Koko (the name of my home server) in only few minutes.
 
 ## Warning :warning:
 The script is designed to run only once. It has no checks, so if you run it multiple times, it might fail and create unnecessary entries in the fstab or create unnecessary LVs.
