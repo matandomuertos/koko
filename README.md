@@ -2,7 +2,7 @@
 This repo has the files needed to install and configure Koko (the name of my home server) in only few minutes.
 
 ## Warning :warning:
-The script is designed to run only once. It has no checks, so if you run it multiple times, it might fail and create unnecessary entries in the fstab or create unnecessary LVs.
+The script is designed to be run only once and does not include any checks for repeated runs. Running the script multiple times may result in failure and create unnecessary entries in the fstab or LVs.
 
 ## Requirements
 - This repo assumes all Docker app config files are in `/bkp/docker` (`hdd-vg/bkp-lv`)
@@ -17,10 +17,10 @@ The script is designed to run only once. It has no checks, so if you run it mult
     - `hdd-vg` structure:
       - `download-lv` (ext4)
       - `bkp-lv` (ext4)
-- [GoDaddy DNS entries](https://dcc.godaddy.com/control/wyppu.com/dns?plid=1):
+- [GoDaddy DNS entries](https://dcc.godaddy.com/control/):
   - Type A: `@` -> `192.168.31.167`
   - Type A: `*` -> `192.168.31.167`
-  - Type A: `test` -> Public IP (if you wanna test.wyppu.com exposed to the world, also router config needed)
+  - Type A: `test` -> Public IP (if you wanna test.domain.com exposed to the world, also router config needed)
 
 ## How to use
 ```
