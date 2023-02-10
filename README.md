@@ -20,7 +20,7 @@ The script is designed to be run only once and does not include any checks for r
 - [GoDaddy DNS entries](https://dcc.godaddy.com/control/):
   - Type A: `@` -> `192.168.31.167`
   - Type A: `*` -> `192.168.31.167`
-  - Type A: `test` -> Public IP (if you wanna test.domain.com exposed to the world, also router config needed)
+  - Type A: `test` -> Public IP (if you wanna to expose test.domain.com to the world, you will need, also, to expose the port 80 and 443 on your router configuration)
 
 ## How to use
 ```
