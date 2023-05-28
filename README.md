@@ -17,7 +17,7 @@ The script is designed to be run only once and does not include any checks for r
     - `hdd-vg` structure:
       - `download-lv` (ext4)
       - `bkp-lv` (ext4)
-- [GoDaddy DNS entries](https://dcc.godaddy.com/control/) - Now configure in [CloudFlare](https://www.cloudflare.com/):
+- [GoDaddy DNS entries](https://dcc.godaddy.com/control/) - DNS now managed by [CloudFlare](https://www.cloudflare.com/):
   - Type A: `@` -> `192.168.31.167`
   - Type A: `*` -> `192.168.31.167`
   - Type A: `test` -> Public IP (if you wanna to expose test.domain.com to the world, you will need, also, to expose the port 80 and 443 on your router configuration)
