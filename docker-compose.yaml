@@ -252,6 +252,14 @@ services:
     ports:
       - "5201:5201"
 
+  cftunnel:
+    image: cloudflare/cloudflared:2023.5.1
+    container_name: cftunnel
+    restart: unless-stopped
+    environment:
+      - CF_TOKEN=${CF_TOKEN}
+    command: tunnel --no-autoupdate run --token $CF_TOKEN
+
   ### Test ###
   test:
     image: nginxdemos/hello
