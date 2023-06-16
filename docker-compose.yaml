@@ -48,7 +48,7 @@ services:
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.wyppu.com`)"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
-      - "traefik.http.routers.qbittorrent.tls.certresolver=godaddy"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
 
   plex:
     container_name: plex
@@ -67,7 +67,7 @@ services:
       - "traefik.http.routers.plex.rule=Host(`plex.wyppu.com`)"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
       - "traefik.http.routers.plex.entrypoints=websecure"
-      - "traefik.http.routers.plex.tls.certresolver=godaddy"
+      - "traefik.http.routers.plex.tls.certresolver=cloudflare"
 
   gitea:
     image: gitea/gitea:1.17.3
@@ -87,7 +87,7 @@ services:
       - "traefik.http.routers.gitea.rule=Host(`git.wyppu.com`)"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
       - "traefik.http.routers.gitea.entrypoints=websecure"
-      - "traefik.http.routers.gitea.tls.certresolver=godaddy"
+      - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
 
   uptime-kuma:
     image: louislam/uptime-kuma:latest
@@ -102,7 +102,7 @@ services:
       - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.wyppu.com`)"
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
-      - "traefik.http.routers.uptime-kuma.tls.certresolver=godaddy"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare"
 
   koko-web:
     image: matandomuertos/koko-dashboard-web:latest
@@ -118,7 +118,7 @@ services:
       - "traefik.http.routers.dashboard.rule=Host(`koko.wyppu.com`)"
       - "traefik.http.services.dashboard.loadbalancer.server.port=80"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.tls.certresolver=godaddy"
+      - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
 
   koko-api:
     image: matandomuertos/koko-dashboard-api:latest
@@ -145,7 +145,7 @@ services:
       - "traefik.http.routers.vaultwarden.rule=Host(`vw.wyppu.com`)"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
       - "traefik.http.routers.vaultwarden.entrypoints=websecure"
-      - "traefik.http.routers.vaultwarden.tls.certresolver=godaddy"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
 
   ### Networking ###
   pihole:
@@ -172,27 +172,25 @@ services:
       - "traefik.http.routers.pihole.rule=Host(`pihole.wyppu.com`)"
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
       - "traefik.http.routers.pihole.entrypoints=websecure"
-      - "traefik.http.routers.pihole.tls.certresolver=godaddy"
+      - "traefik.http.routers.pihole.tls.certresolver=cloudflare"
 
   traefik:
     image: traefik:v2.9
     container_name: traefik
     restart: always
     environment:
-      - GODADDY_API_KEY=${TRAEFIK_GODADDY_API_KEY}
-      - GODADDY_API_SECRET=${TRAEFIK_GODADDY_API_SECRET}
+      - CF_DNS_API_TOKEN=${TRAEFIK_CF_DNS_API_TOKEN}
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.godaddy.acme.dnschallenge=true"
-      - "--certificatesResolvers.godaddy.acme.dnsChallenge.provider=godaddy"
-      - "--certificatesResolvers.godaddy.acme.dnsChallenge.delayBeforeCheck=0"
-      - "--certificatesresolvers.godaddy.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
-      - "--certificatesresolvers.godaddy.acme.email=${TRAEFIK_GODADDY_EMAIL}"
-      - "--certificatesresolvers.godaddy.acme.storage=/certs/acme.json"
+      - "--certificatesresolvers.cloudflare.acme.dnsChallenge=true"
+      - "--certificatesresolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.delayBeforeCheck=0"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53"
+      - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
@@ -219,7 +217,7 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`tk.wyppu.com`)"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
       - "traefik.http.routers.treafik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls.certresolver=godaddy"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
 
   ### Monitoring ###
   cadvisor:
@@ -240,7 +238,7 @@ services:
       - "traefik.http.routers.cadvisor.rule=Host(`c.wyppu.com`)"
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
       - "traefik.http.routers.cadvisor.entrypoints=websecure"
-      - "traefik.http.routers.cadvisor.tls.certresolver=godaddy"
+      - "traefik.http.routers.cadvisor.tls.certresolver=cloudflare"
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3
@@ -272,5 +270,5 @@ services:
       - "traefik.http.routers.test.rule=Host(`test.wyppu.com`)"
       - "traefik.http.services.test.loadbalancer.server.port=80"
       - "traefik.http.routers.test.entrypoints=websecure"
-      - "traefik.http.routers.test.tls.certresolver=godaddy"
+      - "traefik.http.routers.test.tls.certresolver=cloudflare"
 
