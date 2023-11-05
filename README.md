@@ -69,6 +69,8 @@ There are a few more apps that could be tested and added to the init script:
 - [Portainer](https://github.com/portainer/portainer)
 - [Home Assistant](https://github.com/home-assistant)
 - [FileBroswer](https://github.com/filebrowser/filebrowser)
+- [Kasm](https://www.kasmweb.com/docs/latest/index.html)
+- [Watchover](https://github.com/containrrr/watchtower)
 
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
