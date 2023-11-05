@@ -63,6 +63,7 @@ $ sudo ./init.sh
 
 ## What's next
 There are a few more apps that could be tested and added to the init script:
+- Move from custom dashboard to [Homarr](https://github.com/ajnart/homarr/pkgs/container/homarr)
 - [k3s](https://github.com/k3s-io/k3s)
 - Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma)
 - [Portainer](https://github.com/portainer/portainer)
