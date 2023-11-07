@@ -147,32 +147,55 @@ services:
       - "traefik.http.routers.vaultwarden.entrypoints=websecure"
       - "traefik.http.routers.vaultwarden.tls.certresolver=godaddy"
 
-  ### Networking ###
-  pihole:
-    image: pihole/pihole:2023.01.10
-    container_name: pihole
-    restart: always
-    environment:
-      - TZ=Europe/Warsaw
-      - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
-      - PIHOLE_DNS_=8.8.8.8;8.8.4.4
-      - FTLCONF_LOCAL_IPV4=192.168.31.167
-      - DNSMASQ_LISTENING=all
-      - QUERY_LOGGING=false
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
     volumes:
-      - /bkp/docker/pi-hole/pihole:/etc/pihole
-      - /bkp/docker/pi-hole/dnsmasq:/etc/dnsmasq.d
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
+      - /bkp/docker/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - pihole
+      - test 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.wyppu.com`)"
-      - "traefik.http.services.pihole.loadbalancer.server.port=80"
-      - "traefik.http.routers.pihole.entrypoints=websecure"
-      - "traefik.http.routers.pihole.tls.certresolver=godaddy"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.wyppu.com`)"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=godaddy"
+      - "traefik.http.routers.portainer.service=portainer"
+      - "traefik.http.routers.edge.rule=Host(`edge.wyppu.com`)"
+      - "traefik.http.services.edge.loadbalancer.server.port=8000"
+      - "traefik.http.routers.edge.entrypoints=websecure"
+      - "traefik.http.routers.edge.tls.certresolver=godaddy"
+      - "traefik.http.routers.edge.service=edge"
+
+  ### Networking ###
+  #pihole:
+  #  image: pihole/pihole:2023.01.10
+  #  container_name: pihole
+  #  restart: always
+  #  environment:
+  #    - TZ=Europe/Warsaw
+  #    - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
+  #    - PIHOLE_DNS_=8.8.8.8;8.8.4.4
+  #    - FTLCONF_LOCAL_IPV4=192.168.31.167
+  #    - DNSMASQ_LISTENING=all
+  #    - QUERY_LOGGING=false
+  #  volumes:
+  #    - /bkp/docker/pi-hole/pihole:/etc/pihole
+  #    - /bkp/docker/pi-hole/dnsmasq:/etc/dnsmasq.d
+  #  ports:
+  #    - "53:53/tcp"
+  #    - "53:53/udp"
+  #  networks:
+  #    - pihole
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.pihole.rule=Host(`pihole.wyppu.com`)"
+  #    - "traefik.http.services.pihole.loadbalancer.server.port=80"
+  #    - "traefik.http.routers.pihole.entrypoints=websecure"
+  #    - "traefik.http.routers.pihole.tls.certresolver=godaddy"
 
   traefik:
     image: traefik:v2.9
