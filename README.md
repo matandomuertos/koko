@@ -65,13 +65,14 @@ There are a few more apps that could be tested and added to the init script:
 - Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma)
 - [FileBroswer](https://github.com/filebrowser/filebrowser)
 - [Kasm](https://www.kasmweb.com/docs/latest/index.html)
+- Backup docker FS and all secrets somewhere out of the server
 
 ## Notes
 - Neither [homer](https://github.com/bastienwirtz/homer) nor [homarr](https://github.com/ajnart/homarr) were better than the custom dashboard
 - [k3s](https://github.com/k3s-io/k3s) replaced by [k3d](https://k3d.io/)
 - [Portainer](https://github.com/portainer/portainer) is running as test
 - [Watchover](https://github.com/containrrr/watchtower) is overkill, the crontab works good enough
-- [Home Assistant](https://github.com/home-assistant) is overkill for the quantity of devices I have right now
+- [Home Assistant](https://github.com/home-assistant) is running as test
 - [Pi-hole](https://github.com/pi-hole/docker-pi-hole) is commented due I'm not using it
 
 

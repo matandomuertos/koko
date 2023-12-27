@@ -119,6 +119,12 @@ services:
       - "traefik.http.services.dashboard.loadbalancer.server.port=80"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=godaddy"
+      - "traefik.http.routers.dashboard.service=dashboard"
+      - "traefik.http.routers.dashboard2.rule=Host(`nahuelcassinari-everest.nord`)"
+      - "traefik.http.services.dashboard2.loadbalancer.server.port=80"
+      - "traefik.http.routers.dashboard2.entrypoints=web"
+      - "traefik.http.routers.dashboard2.service=dashboard2"
+
 
   koko-api:
     image: matandomuertos/koko-dashboard-api:latest
@@ -170,6 +176,29 @@ services:
       - "traefik.http.routers.edge.tls.certresolver=godaddy"
       - "traefik.http.routers.edge.service=edge"
 
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    restart: unless-stopped
+    environment:
+      DISABLE_JEMALLOC: true
+    expose:
+      - 8123
+    volumes:
+      - /bkp/docker/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    labels:
+      - "traefik.enable=true" # Actually not using Traefik, it's node port in 8123
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.wyppu.com`)"
+      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      - "traefik.http.routers.homeassistant.entrypoints=websecure"
+      - "traefik.http.routers.homeassistant.tls.certresolver=godaddy"
+
   ### Networking ###
   #pihole:
   #  image: pihole/pihole:2023.01.10
@@ -216,9 +245,9 @@ services:
       - "--certificatesresolvers.godaddy.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
       - "--certificatesresolvers.godaddy.acme.email=${TRAEFIK_GODADDY_EMAIL}"
       - "--certificatesresolvers.godaddy.acme.storage=/certs/acme.json"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+        #- "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+        #- "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+        #- "--entrypoints.web.http.redirections.entrypoint.permanent=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /bkp/docker/traefik/certs:/certs
