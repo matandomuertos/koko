@@ -29,6 +29,7 @@ networks:
 services:
 
   ### APPS ###
+
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
@@ -45,10 +46,12 @@ services:
       - qbittorrent
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qb.wyppu.com`)"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`)"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls.certresolver=godaddy"
+      - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
+      - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   plex:
     container_name: plex
@@ -63,14 +66,14 @@ services:
       - /download:/download
     network_mode: host
     labels:
-      - "traefik.enable=true" # Actually, it's not working without port (plex.wyppu.com:32400) because plex doesn't like reverse proxies
-      - "traefik.http.routers.plex.rule=Host(`plex.wyppu.com`)"
+      - "traefik.enable=true" # Actually, it's not working without port (plex.${DOMAIN}:32400) because plex doesn't like reverse proxies
+      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN}`)"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
       - "traefik.http.routers.plex.entrypoints=websecure"
       - "traefik.http.routers.plex.tls.certresolver=godaddy"
 
   gitea:
-    image: gitea/gitea:1.17.3
+    image: gitea/gitea:1.21.3
     container_name: gitea
     restart: unless-stopped
     environment:
@@ -84,10 +87,12 @@ services:
       - gitea
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitea.rule=Host(`git.wyppu.com`)"
+      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls.certresolver=godaddy"
+      - "traefik.http.routers.gitea.middlewares=gitea-whitelist"
+      - "traefik.http.middlewares.gitea-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   uptime-kuma:
     image: louislam/uptime-kuma:latest
@@ -99,10 +104,12 @@ services:
       - uptime-kuma
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.wyppu.com`)"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.${DOMAIN}`)"
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
       - "traefik.http.routers.uptime-kuma.tls.certresolver=godaddy"
+      - "traefik.http.routers.uptime-kuma.middlewares=uptime-kuma-whitelist"
+      - "traefik.http.middlewares.uptime-kuma-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   koko-web:
     image: matandomuertos/koko-dashboard-web:latest
@@ -115,15 +122,13 @@ services:
       - koko-dashboard-api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`koko.wyppu.com`)"
+      - "traefik.http.routers.dashboard.rule=Host(`koko.${DOMAIN}`)"
       - "traefik.http.services.dashboard.loadbalancer.server.port=80"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=godaddy"
       - "traefik.http.routers.dashboard.service=dashboard"
-      - "traefik.http.routers.dashboard2.rule=Host(`nahuelcassinari-everest.nord`)"
-      - "traefik.http.services.dashboard2.loadbalancer.server.port=80"
-      - "traefik.http.routers.dashboard2.entrypoints=web"
-      - "traefik.http.routers.dashboard2.service=dashboard2"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-whitelist"
+      - "traefik.http.middlewares.dashboard-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
 
   koko-api:
@@ -136,7 +141,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   vaultwarden:
-    image: vaultwarden/server:1.27.0-alpine
+    image: vaultwarden/server:1.30.1-alpine
     container_name: vaultwarden
     restart: unless-stopped
     environment:
@@ -148,10 +153,12 @@ services:
       - vaultwarden
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vw.wyppu.com`)"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vw.${DOMAIN}`)"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
       - "traefik.http.routers.vaultwarden.entrypoints=websecure"
       - "traefik.http.routers.vaultwarden.tls.certresolver=godaddy"
+      - "traefik.http.routers.vaultwarden.middlewares=vaultwarden-whitelist"
+      - "traefik.http.middlewares.vaultwarden-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -165,16 +172,20 @@ services:
       - test 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.wyppu.com`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=godaddy"
       - "traefik.http.routers.portainer.service=portainer"
-      - "traefik.http.routers.edge.rule=Host(`edge.wyppu.com`)"
+      - "traefik.http.routers.portainer.middlewares=portainer-whitelist"
+      - "traefik.http.middlewares.portainer-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+      - "traefik.http.routers.edge.rule=Host(`edge.${DOMAIN}`)"
       - "traefik.http.services.edge.loadbalancer.server.port=8000"
       - "traefik.http.routers.edge.entrypoints=websecure"
       - "traefik.http.routers.edge.tls.certresolver=godaddy"
       - "traefik.http.routers.edge.service=edge"
+      - "traefik.http.routers.edge.middlewares=edge-whitelist"
+      - "traefik.http.middlewares.edge-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   homeassistant:
     container_name: homeassistant
@@ -189,45 +200,19 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
       - /dev/ttyUSB0:/dev/ttyUSB0
-    restart: unless-stopped
     privileged: true
     network_mode: host
     labels:
       - "traefik.enable=true" # Actually not using Traefik, it's node port in 8123
-      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.wyppu.com`)"
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${DOMAIN}`)"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls.certresolver=godaddy"
 
   ### Networking ###
-  #pihole:
-  #  image: pihole/pihole:2023.01.10
-  #  container_name: pihole
-  #  restart: always
-  #  environment:
-  #    - TZ=Europe/Warsaw
-  #    - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
-  #    - PIHOLE_DNS_=8.8.8.8;8.8.4.4
-  #    - FTLCONF_LOCAL_IPV4=192.168.31.167
-  #    - DNSMASQ_LISTENING=all
-  #    - QUERY_LOGGING=false
-  #  volumes:
-  #    - /bkp/docker/pi-hole/pihole:/etc/pihole
-  #    - /bkp/docker/pi-hole/dnsmasq:/etc/dnsmasq.d
-  #  ports:
-  #    - "53:53/tcp"
-  #    - "53:53/udp"
-  #  networks:
-  #    - pihole
-  #  labels:
-  #    - "traefik.enable=true"
-  #    - "traefik.http.routers.pihole.rule=Host(`pihole.wyppu.com`)"
-  #    - "traefik.http.services.pihole.loadbalancer.server.port=80"
-  #    - "traefik.http.routers.pihole.entrypoints=websecure"
-  #    - "traefik.http.routers.pihole.tls.certresolver=godaddy"
 
   traefik:
-    image: traefik:v2.9
+    image: traefik:v2.10
     container_name: traefik
     restart: always
     environment:
@@ -245,9 +230,11 @@ services:
       - "--certificatesresolvers.godaddy.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
       - "--certificatesresolvers.godaddy.acme.email=${TRAEFIK_GODADDY_EMAIL}"
       - "--certificatesresolvers.godaddy.acme.storage=/certs/acme.json"
-        #- "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-        #- "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-        #- "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+     #- "--accesslog=true"
+     #- "--accesslog.filePath=/logs/access.log"
+     #- "--accesslog.filters.statuscodes=200,300-308,403"
+     #- "--accesslog.filters.retryattempts"
+     #- "--accesslog.filters.minduration=10ms"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /bkp/docker/traefik/certs:/certs
@@ -268,14 +255,17 @@ services:
       - test
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`tk.wyppu.com`)"
+      - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`)"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
       - "traefik.http.routers.treafik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=godaddy"
+      - "traefik.http.routers.traefik.middlewares=traefik-whitelist"
+      - "traefik.http.middlewares.traefik-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   ### Monitoring ###
+
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
@@ -289,10 +279,12 @@ services:
       - cadvisor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.cadvisor.rule=Host(`c.wyppu.com`)"
+      - "traefik.http.routers.cadvisor.rule=Host(`c.${DOMAIN}`)"
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
       - "traefik.http.routers.cadvisor.entrypoints=websecure"
       - "traefik.http.routers.cadvisor.tls.certresolver=godaddy"
+      - "traefik.http.routers.cadvisor.middlewares=cadvisor-whitelist"
+      - "traefik.http.middlewares.cadvisor-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3
@@ -304,15 +296,8 @@ services:
     ports:
       - "5201:5201"
 
-  cftunnel:
-    image: cloudflare/cloudflared:2023.5.1
-    container_name: cftunnel
-    restart: unless-stopped
-    environment:
-      - CF_TOKEN=${CF_TOKEN}
-    command: tunnel --no-autoupdate run --token $CF_TOKEN
-
   ### Test ###
+
   test:
     image: nginxdemos/hello
     container_name: test
@@ -321,8 +306,47 @@ services:
       - test
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.test.rule=Host(`test.wyppu.com`)"
+      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`)"
       - "traefik.http.services.test.loadbalancer.server.port=80"
       - "traefik.http.routers.test.entrypoints=websecure"
       - "traefik.http.routers.test.tls.certresolver=godaddy"
+      - "traefik.http.routers.test.middlewares=test-whitelist"
+      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
+
+ ### OLD SERVICES ###
+  # cftunnel:
+  #   image: cloudflare/cloudflared:2023.5.1
+  #   container_name: cftunnel
+  #   restart: unless-stopped
+  #   environment:
+  #     - CF_TOKEN=${CF_TOKEN}
+  #   command: tunnel --no-autoupdate run --token $CF_TOKEN
+
+  # pihole:
+  #  image: pihole/pihole:2023.01.10
+  #  container_name: pihole
+  #  restart: always
+  #  environment:
+  #    - TZ=Europe/Warsaw
+  #    - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
+  #    - PIHOLE_DNS_=8.8.8.8;8.8.4.4
+  #    - FTLCONF_LOCAL_IPV4=192.168.31.167
+  #    - DNSMASQ_LISTENING=all
+  #    - QUERY_LOGGING=false
+  #  volumes:
+  #    - /bkp/docker/pi-hole/pihole:/etc/pihole
+  #    - /bkp/docker/pi-hole/dnsmasq:/etc/dnsmasq.d
+  #  ports:
+  #    - "53:53/tcp"
+  #    - "53:53/udp"
+  #  networks:
+  #    - pihole
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN}`)"
+  #    - "traefik.http.services.pihole.loadbalancer.server.port=80"
+  #    - "traefik.http.routers.pihole.entrypoints=websecure"
+  #    - "traefik.http.routers.pihole.tls.certresolver=godaddy"
+  #    - "traefik.http.routers.pihole.middlewares=pihole-whitelist"
+  #    - "traefik.http.middlewares.pihole-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"

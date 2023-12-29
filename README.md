@@ -1,8 +1,8 @@
 # Koko
-This repo has the files needed to install and configure Koko (the name of my home server) in only few minutes.
+This repo has the files needed to install and configure my home server, named `koko`, in only a few minutes.
 
 ## Warning :warning:
-The script is designed to be run only once and does not include any checks for repeated runs. Running the script multiple times may result in failure and create unnecessary entries in the fstab or LVs.
+The script is designed to run only once and it does not include any checks for repeated runs. Running the script multiple times may result in failure and create unnecessary entries in the fstab or LVs.
 
 ## Requirements
 - This repo assumes all Docker app config files are in `/bkp/docker` (`hdd-vg/bkp-lv`)
@@ -20,10 +20,11 @@ The script is designed to be run only once and does not include any checks for r
 - [GoDaddy DNS entries](https://dcc.godaddy.com/control/):
   - Type A: `@` -> `192.168.31.167`
   - Type A: `*` -> `192.168.31.167`
-  - Type A: `test` -> Public IP (if you wanna to expose test.domain.com to the world, you will need, also, to expose the port 80 and 443 on your router configuration)
+  - Type A: `*.pub` -> NordVPN Meshnet IP
 
 ## How to use
 ```
+$ cd ~nahuel
 $ git clone https://github.com/matandomuertos/koko.git
 $ cd koko
 $ sudo ./init.sh
@@ -43,10 +44,7 @@ $ sudo ./init.sh
 - Reboot the system
 
 ## Post-reboot instructions
-- With the user `nahuel`, run `docker compose up -d` to run all the apps
-- Router DNS configuration:
-  - Primary: `192.168.31.167` (Pi-hole in Koko)
-  - Secondary: `8.8.8.8` (Google primary DNS) -> This makes pi-hole useless because it won't block ads
+- With the user `nahuel`, go to the directory `koko` and run `docker compose up -d` to run all the apps
 
 ## Apps running
 - [qBitorrent](https://hub.docker.com/r/linuxserver/qbittorrent)
@@ -58,7 +56,23 @@ $ sudo ./init.sh
 - [Traefik](https://github.com/traefik/traefik)
 - [cAdvisor](https://github.com/google/cadvisor)
 - [iPerf3](https://github.com/nerdalert/iperf3)
-- Test web server (nginx)
+- [Portainer](https://github.com/portainer/portainer)
+- [Home Assistant](https://github.com/home-assistant)
+- Test web server ([nginx](https://hub.docker.com/r/nginxdemos/hello/))
+
+## Apps abandoned
+- [Pi-hole](https://github.com/pi-hole/docker-pi-hole) - Simply not using it
+- [Watchover](https://github.com/containrrr/watchtower) - Quite overkill, the crontab works good enough
+- [homer](https://github.com/bastienwirtz/homer) - Still prefer my custom dashboard
+- [homarr](https://github.com/ajnart/homarr) - Still prefer my custom dashboard
+
+## Other apps
+- [k3d](https://k3d.io/) was installed manually
+- [NordVPN CLI](https://support.nordvpn.com/Connectivity/Linux/1325531132/Installing-and-using-NordVPN-on-Debian-Ubuntu-Raspberry-Pi-Elementary-OS-and-Linux-Mint.htm) was installed manually (and meshnet was configured manually too) 
+
+## Known issues
+- Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
+- Plex is not actually using TLS, it seems it doesn't like reverse proxies and I was lazy to go deeper to fix it
 
 ## What's next
 There are a few more apps that could be tested and added to the init script:
@@ -67,16 +81,3 @@ There are a few more apps that could be tested and added to the init script:
 - [Kasm](https://www.kasmweb.com/docs/latest/index.html)
 - Backup docker FS and all secrets somewhere out of the server
 
-## Notes
-- Neither [homer](https://github.com/bastienwirtz/homer) nor [homarr](https://github.com/ajnart/homarr) were better than the custom dashboard
-- [k3s](https://github.com/k3s-io/k3s) replaced by [k3d](https://k3d.io/)
-- [Portainer](https://github.com/portainer/portainer) is running as test
-- [Watchover](https://github.com/containrrr/watchtower) is overkill, the crontab works good enough
-- [Home Assistant](https://github.com/home-assistant) is running as test
-- [Pi-hole](https://github.com/pi-hole/docker-pi-hole) is commented due I'm not using it
-
-
-
-## Known issues
-- Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
-- Plex is not actually using TLS, it seems it doesn't like reverse proxies and I was lazy to go deeper to fix it
