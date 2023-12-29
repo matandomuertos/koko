@@ -230,11 +230,11 @@ services:
       - "--certificatesresolvers.godaddy.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
       - "--certificatesresolvers.godaddy.acme.email=${TRAEFIK_GODADDY_EMAIL}"
       - "--certificatesresolvers.godaddy.acme.storage=/certs/acme.json"
-     #- "--accesslog=true"
-     #- "--accesslog.filePath=/logs/access.log"
-     #- "--accesslog.filters.statuscodes=200,300-308,403"
-     #- "--accesslog.filters.retryattempts"
-     #- "--accesslog.filters.minduration=10ms"
+        #- "--accesslog=true"
+        #- "--accesslog.filePath=/logs/access.log"
+        #- "--accesslog.filters.statuscodes=200,300-308,403,404"
+        #- "--accesslog.filters.retryattempts"
+        #- "--accesslog.filters.minduration=10ms"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /bkp/docker/traefik/certs:/certs
