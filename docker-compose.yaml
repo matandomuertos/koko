@@ -122,7 +122,7 @@ services:
       - koko-dashboard-api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`koko.${DOMAIN}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`koko.${DOMAIN}`) || Host(`koko.pub.${DOMAIN}`)"
       - "traefik.http.services.dashboard.loadbalancer.server.port=80"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=godaddy"
@@ -230,6 +230,9 @@ services:
       - "--certificatesresolvers.godaddy.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
       - "--certificatesresolvers.godaddy.acme.email=${TRAEFIK_GODADDY_EMAIL}"
       - "--certificatesresolvers.godaddy.acme.storage=/certs/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
         #- "--accesslog=true"
         #- "--accesslog.filePath=/logs/access.log"
         #- "--accesslog.filters.statuscodes=200,300-308,403,404"
