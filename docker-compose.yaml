@@ -46,7 +46,7 @@ services:
       - qbittorrent
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`)"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls.certresolver=godaddy"
@@ -67,7 +67,7 @@ services:
     network_mode: host
     labels:
       - "traefik.enable=true" # Actually, it's not working without port (plex.${DOMAIN}:32400) because plex doesn't like reverse proxies
-      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN}`)"
+      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN}`) || Host(`plex.pub.${DOMAIN}`)"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
       - "traefik.http.routers.plex.entrypoints=websecure"
       - "traefik.http.routers.plex.tls.certresolver=godaddy"
@@ -87,7 +87,7 @@ services:
       - gitea
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)"
+      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`) || Host(`git.pub.${DOMAIN}`)"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls.certresolver=godaddy"
@@ -104,7 +104,7 @@ services:
       - uptime-kuma
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.${DOMAIN}`)"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.${DOMAIN}`) || Host(`kuma.pub.${DOMAIN}`)"
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
       - "traefik.http.routers.uptime-kuma.tls.certresolver=godaddy"
@@ -153,7 +153,7 @@ services:
       - vaultwarden
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vw.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vw.${DOMAIN}`) || Host(`vw.pub.${DOMAIN}`)"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
       - "traefik.http.routers.vaultwarden.entrypoints=websecure"
       - "traefik.http.routers.vaultwarden.tls.certresolver=godaddy"
@@ -172,14 +172,14 @@ services:
       - test 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`) || Host(`portainer.pub.${DOMAIN}`)"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=godaddy"
       - "traefik.http.routers.portainer.service=portainer"
       - "traefik.http.routers.portainer.middlewares=portainer-whitelist"
       - "traefik.http.middlewares.portainer-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-      - "traefik.http.routers.edge.rule=Host(`edge.${DOMAIN}`)"
+      - "traefik.http.routers.edge.rule=Host(`edge.${DOMAIN}`) || Host(`edge.pub.${DOMAIN}`)"
       - "traefik.http.services.edge.loadbalancer.server.port=8000"
       - "traefik.http.routers.edge.entrypoints=websecure"
       - "traefik.http.routers.edge.tls.certresolver=godaddy"
@@ -204,7 +204,7 @@ services:
     network_mode: host
     labels:
       - "traefik.enable=true" # Actually not using Traefik, it's node port in 8123
-      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${DOMAIN}`)"
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${DOMAIN}`) || Host(`homeassistant.pub.${DOMAIN}`)"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls.certresolver=godaddy"
@@ -258,7 +258,7 @@ services:
       - test
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`)"
+      - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`) || Host(`tk.pub.${DOMAIN}`)"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
       - "traefik.http.routers.treafik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=godaddy"
@@ -282,7 +282,7 @@ services:
       - cadvisor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.cadvisor.rule=Host(`c.${DOMAIN}`)"
+      - "traefik.http.routers.cadvisor.rule=Host(`c.${DOMAIN}`) || Host(`c.pub.${DOMAIN}`)"
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
       - "traefik.http.routers.cadvisor.entrypoints=websecure"
       - "traefik.http.routers.cadvisor.tls.certresolver=godaddy"
@@ -309,7 +309,7 @@ services:
       - test
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`)"
+      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
       - "traefik.http.services.test.loadbalancer.server.port=80"
       - "traefik.http.routers.test.entrypoints=websecure"
       - "traefik.http.routers.test.tls.certresolver=godaddy"
@@ -347,9 +347,10 @@ services:
   #    - pihole
   #  labels:
   #    - "traefik.enable=true"
-  #    - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN}`)"
+  #    - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN}` || Host(`pihole.pub.${DOMAIN}`))"
   #    - "traefik.http.services.pihole.loadbalancer.server.port=80"
   #    - "traefik.http.routers.pihole.entrypoints=websecure"
   #    - "traefik.http.routers.pihole.tls.certresolver=godaddy"
   #    - "traefik.http.routers.pihole.middlewares=pihole-whitelist"
   #    - "traefik.http.middlewares.pihole-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
