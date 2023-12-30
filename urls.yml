@@ -1,12 +1,18 @@
-Tools:
+Hobbies:
   - title: Plex
-    url: https://plex.wyppu.com:32400
+    url: http://plex.wyppu.com:32400
     image: https://i.redd.it/5x93lknmuaw81.jpg
     containerName: plex
+  - title: Home Assistant
+    url: http://homeassistant.wyppu.com:8123
+    image: https://smartme.pl/wp-content/uploads/2020/01/Home-Assistant-Logo-1.png
+    containerName: homeassistant
   - title: qBittorrent
     url: https://qb.wyppu.com
     image: https://www.adslzone.net/app/uploads-adslzone.net/2020/02/aperQbittorrent.jpg
     containerName: qbittorrent
+
+Tools:
   - title: Gitea
     url: https://git.wyppu.com
     image: https://www.linode.com/wp-content/uploads/2021/01/gitea-featured-image-linode.png
@@ -25,13 +31,13 @@ System:
     url: https://c.wyppu.com
     image: https://nephilimboy.github.io/XNFV/img/tools/cadvisor.jpg
     containerName: cadvisor
-  - title: Pi-hole
-    url: https://pihole.wyppu.com/admin
-    image: https://michaelxander.com/assets/images/social/pi-hole-vpn.png
-    containerName: pihole
+  - title: Portainer
+    url: https://portainer.wyppu.com
+    image: https://i.ytimg.com/vi/Re4qYn4Iya8/maxresdefault.jpg
+    containerName: portainer
   - title: Traefik
     url: https://tk.wyppu.com
-    image: https://oscimg.oschina.net/oscnet/up-90936b58166a2c15b50467b59c8556b32c6.png
+    image: https://cdn.thenewstack.io/media/2022/09/f45f4aba-traefik.jpg
     containerName: traefik
 
 Others:
