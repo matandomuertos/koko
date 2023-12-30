@@ -17,7 +17,7 @@ networks:
     driver: bridge
   vaultwarden:
     driver: bridge
-  pihole:
+  homeassistant:
     driver: bridge
   cadvisor:
     driver: bridge
@@ -252,7 +252,7 @@ services:
       - koko-dashboard-ui
       - koko-dashboard-api
       - vaultwarden
-      - pihole
+      - homeassistant
       - cadvisor
       - iperf3
       - test

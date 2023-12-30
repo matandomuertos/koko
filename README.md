@@ -73,6 +73,7 @@ $ sudo ./init.sh
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
 - Plex is not actually using TLS, it seems it doesn't like reverse proxies and I was lazy to go deeper to fix it
+- Homeassistant is not running behind Traefik because autodiscovery (mostly apple devices) needs `network_mode: host` and port `8123` to work
 
 ## What's next
 There are a few more apps that could be tested and added to the init script:
