@@ -3,6 +3,8 @@ version: '3.8'
 volumes:
   transcode_plex:
     driver: local
+  prometheus_data:
+    driver: local
 
 networks:
   qbittorrent:
@@ -19,7 +21,7 @@ networks:
     driver: bridge
   homeassistant:
     driver: bridge
-  cadvisor:
+  monitoring:
     driver: bridge
   iperf3:
     driver: bridge
@@ -233,6 +235,8 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
         #- "--accesslog=true"
         #- "--accesslog.filePath=/logs/access.log"
         #- "--accesslog.filters.statuscodes=200,300-308,403,404"
@@ -253,7 +257,7 @@ services:
       - koko-dashboard-api
       - vaultwarden
       - homeassistant
-      - cadvisor
+      - monitoring
       - iperf3
       - test
     labels:
@@ -267,8 +271,54 @@ services:
 
   ### Monitoring ###
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.size=8192MB'
+      - '--storage.tsdb.retention.time=30d'
+    volumes:
+      - /bkp/docker/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`) || Host(`prometheus.pub.${DOMAIN}`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=godaddy"
+      - "traefik.http.routers.prometheus.middlewares=prometheus-whitelist"
+      - "traefik.http.middlewares.prometheus-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - /bkp/docker/monitoring/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - /bkp/docker/monitoring/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - /bkp/docker/monitoring/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`) || Host(`grafana.pub.${DOMAIN}`)"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=godaddy"
+      - "traefik.http.routers.grafana.middlewares=grafana-whitelist"
+      - "traefik.http.middlewares.grafana-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    image: gcr.io/cadvisor/cadvisor
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
@@ -279,7 +329,7 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     networks:
-      - cadvisor
+      - monitoring
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.cadvisor.rule=Host(`c.${DOMAIN}`) || Host(`c.pub.${DOMAIN}`)"
@@ -288,6 +338,22 @@ services:
       - "traefik.http.routers.cadvisor.tls.certresolver=godaddy"
       - "traefik.http.routers.cadvisor.middlewares=cadvisor-whitelist"
       - "traefik.http.middlewares.cadvisor-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - monitoring
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3

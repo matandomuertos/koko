@@ -77,7 +77,7 @@ $ sudo ./init.sh
 
 ## What's next
 There are a few more apps that could be tested and added to the init script:
-- Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma)
+- Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma) -> Prom and Grafana already running
 - [FileBroswer](https://github.com/filebrowser/filebrowser)
 - [Kasm](https://www.kasmweb.com/docs/latest/index.html)
 - Backup docker FS and all secrets somewhere out of the server
