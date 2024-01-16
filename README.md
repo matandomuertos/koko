@@ -81,4 +81,3 @@ There are a few more apps that could be tested and added to the init script:
 - [FileBroswer](https://github.com/filebrowser/filebrowser)
 - [Kasm](https://www.kasmweb.com/docs/latest/index.html)
 - Backup docker FS and all secrets somewhere out of the server
-
