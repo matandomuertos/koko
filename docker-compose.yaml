@@ -132,7 +132,6 @@ services:
       - "traefik.http.routers.dashboard.middlewares=dashboard-whitelist"
       - "traefik.http.middlewares.dashboard-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-
   koko-api:
     image: matandomuertos/koko-dashboard-api:latest
     container_name: koko-api
@@ -330,30 +329,22 @@ services:
       - /dev/disk/:/dev/disk:ro
     networks:
       - monitoring
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cadvisor.rule=Host(`c.${DOMAIN}`) || Host(`c.pub.${DOMAIN}`)"
-      - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
-      - "traefik.http.routers.cadvisor.entrypoints=websecure"
-      - "traefik.http.routers.cadvisor.tls.certresolver=godaddy"
-      - "traefik.http.routers.cadvisor.middlewares=cadvisor-whitelist"
-      - "traefik.http.middlewares.cadvisor-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   node-exporter:
     image: prom/node-exporter
     container_name: node-exporter
     restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     networks:
       - monitoring
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3
