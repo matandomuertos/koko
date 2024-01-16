@@ -116,7 +116,7 @@ services:
     container_name: koko-web
     restart: unless-stopped
     volumes:
-      - ${PWD}/urls.yml:/usr/share/nginx/html/config/urls.yml
+      - /bkp/docker/urls.yml:/usr/share/nginx/html/config/urls.yml
     networks:
       - koko-dashboard-ui
       - koko-dashboard-api
