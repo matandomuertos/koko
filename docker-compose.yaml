@@ -5,6 +5,8 @@ volumes:
     driver: local
   prometheus_data:
     driver: local
+  alertmanager_data:
+    driver: local
 
 networks:
   qbittorrent:
@@ -292,6 +294,24 @@ services:
       - "traefik.http.routers.prometheus.tls.certresolver=godaddy"
       - "traefik.http.routers.prometheus.middlewares=prometheus-whitelist"
       - "traefik.http.middlewares.prometheus-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  alertmanager:
+    image: prom/alertmanager
+    restart: unless-stopped
+    command: --config.file=/config/alertmanager.yml
+    volumes:
+      - /bkp/docker/monitoring/alertmanager.yml:/config/alertmanager.yml
+      - alertmanager_data:/data
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.${DOMAIN}`) || Host(`alertmanager.pub.${DOMAIN}`)"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
+      - "traefik.http.routers.alertmanager.tls.certresolver=godaddy"
+      - "traefik.http.routers.alertmanager.middlewares=alertmanager-whitelist"
+      - "traefik.http.middlewares.alertmanager-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   grafana:
     image: grafana/grafana
