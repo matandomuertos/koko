@@ -1,5 +1,3 @@
-version: '3.8'
-
 volumes:
   transcode_plex:
     driver: local
@@ -273,7 +271,7 @@ services:
   ### Monitoring ###
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
     command:
@@ -296,7 +294,8 @@ services:
       - "traefik.http.middlewares.prometheus-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   alertmanager:
-    image: prom/alertmanager
+    image: prom/alertmanager:latest
+    container_name: alertmanager
     restart: unless-stopped
     command: --config.file=/config/alertmanager.yml
     volumes:
@@ -314,7 +313,7 @@ services:
       - "traefik.http.middlewares.alertmanager-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
     environment:
@@ -337,7 +336,7 @@ services:
       - "traefik.http.middlewares.grafana-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
@@ -351,7 +350,7 @@ services:
       - monitoring
 
   node-exporter:
-    image: prom/node-exporter
+    image: prom/node-exporter:latest
     container_name: node-exporter
     restart: unless-stopped
     command:
@@ -367,7 +366,7 @@ services:
       - monitoring
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
-    image: networkstatic/iperf3
+    image: networkstatic/iperf3:latest
     container_name: iperf3
     restart: unless-stopped
     networks:
@@ -379,7 +378,7 @@ services:
   ### Test ###
 
   test:
-    image: nginxdemos/hello
+    image: nginxdemos/hello:latest
     container_name: test
     restart: unless-stopped
     networks:
