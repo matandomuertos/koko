@@ -17,8 +17,7 @@ The script is designed to run only once and it does not include any checks for r
     - `hdd-vg` structure:
       - `download-lv` (ext4)
       - `bkp-lv` (ext4)
-- [GoDaddy DNS entries](https://dcc.godaddy.com/control/):
-  - Type A: `@` -> `192.168.31.167`
+- [GoDaddy DNS entries](https://dcc.godaddy.com/control/) - DNS now managed by [CloudFlare](https://www.cloudflare.com/):
   - Type A: `*` -> `192.168.31.167`
   - Type A: `*.pub` -> NordVPN Meshnet IP
 
