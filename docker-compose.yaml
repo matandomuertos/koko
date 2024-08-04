@@ -210,6 +210,29 @@ services:
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls.certresolver=cloudflare"
 
+  timemachine:
+    container_name: timemachine
+    image: mbentley/timemachine:smb
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TM_USERNAME=${TM_USER}
+      - TM_GROUPNAME=${TM_GROUP}
+      - PASSWORD=${TM_PASS}
+      - TM_UID=1000
+      - TM_GID=1000
+      - SET_PERMISSIONS=false
+      - VOLUME_SIZE_LIMIT=0
+    volumes:
+      - /bkp/docker/timemachine:/opt/${TM_USER}
+    tmpfs:
+      - /run/samba
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+
   ### Networking ###
 
   traefik:
