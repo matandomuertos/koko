@@ -1,7 +1,7 @@
 #10 4 * * * kill -9 `ps -ef | grep plexmediaplayer | grep -v grep | awk '{print $2}'`
 #15 4 * * * export DISPLAY=:0 && /usr/bin/plexmediaplayer
 #*/10 * * * * /bkp/fixPrivilegesMovies.sh
-0 * * * * rsync -avx /bkp/docker /bkp/auth /bkp-ssd/ --delete
+0 * * * * rsync -avx --exclude 'timemachine' /bkp/docker /bkp/auth /bkp-ssd/ --delete
 0 3 * * * rsync -avx /bkp /usb/apollo/ --delete
 */10 * * * * subliminal download -l en /download/qbittorrent
 0 5 * * 0 cd ~nahuel/koko && docker compose pull && docker compose up -d --force-recreate qbittorrent plex uptime-kuma portainer test prometheus alertmanager node-exporter homeassistant cadvisor iperf3 grafana timemachine && docker system prune -a -f
