@@ -39,6 +39,10 @@ mkdir -p /usb/apollo
 echo "/dev/sdc1 /usb/apollo xfs defaults,nofail 0 2" >> /etc/fstab
 mount -a >> /tmp/init-output.txt 2>&1 || exit 1
 
+# Create rclone/gdrive directory
+echo "Creating rclone directory"
+mkdir -p /rclone/gdrive
+
 # Install docker
 echo "Installing Docker"
 apt remove -y docker docker.io containerd runc >> /tmp/init-output.txt 2>&1

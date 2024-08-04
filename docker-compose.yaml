@@ -232,6 +232,24 @@ services:
         soft: 65536
         hard: 65536
 
+  rclone-mount:
+    container_name: rclone-mount
+    image: mumiehub/rclone-mount:v1.66.0
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - 'apparmor:unconfined'
+    volumes:
+      - '/bkp/docker/rclone/config:/config'
+      - '/rclone/gdrive:/mnt/mediaefs:shared'
+    devices:
+      - /dev/fuse
+    environment:
+      - 'RemotePath=gdrive:'
+      - 'MountCommands=--allow-other --allow-non-empty --buffer-size 256M'
+      - 'ConfigName=rclone.conf'
+
   ### Networking ###
 
   traefik:
