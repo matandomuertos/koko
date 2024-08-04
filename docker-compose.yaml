@@ -232,7 +232,6 @@ services:
         soft: 65536
         hard: 65536
 
-
   ### Networking ###
 
   traefik:
