@@ -34,10 +34,12 @@ echo "/dev/mapper/ubuntu--vg-bkpssd--lv /bkp-ssd xfs defaults 1 1" >> /etc/fstab
 mount -a >> /tmp/init-output.txt 2>&1 || exit 1
 
 # Create usb-apollo's filesystem
+apt install -y hdparm >> /tmp/init-output.txt 2>&1
 echo "Creating usb/apollo FS"
 mkdir -p /usb/apollo
 echo "/dev/sdc1 /usb/apollo xfs defaults,nofail 0 2" >> /etc/fstab
 mount -a >> /tmp/init-output.txt 2>&1 || exit 1
+hdparm -S 15 /dev/sdc >> /tmp/init-output.txt 2>&1 #Standby mode after 1 minute
 
 # Create rclone/gdrive directory
 echo "Creating rclone directory"
