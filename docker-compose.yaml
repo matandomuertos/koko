@@ -46,9 +46,11 @@ services:
       - VPN_CLIENT=openvpn
       - ENABLE_STARTUP_SCRIPTS=no
       - LAN_NETWORK=${LAN_NETWORK}
-      - DEBUG=false
+      - DEBUG=true
       - PUID=1000
       - PGID=1000
+    devices:
+      - /dev/net/tun
     volumes:
       - /bkp/docker/qbittorrentconfig:/config
       - /download/qbittorrent:/data
