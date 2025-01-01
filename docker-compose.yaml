@@ -86,7 +86,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"
 
   gitea:
-    image: gitea/gitea:1.21.3
+    image: gitea/gitea:1.22.6
     container_name: gitea
     restart: unless-stopped
     environment:
@@ -245,7 +245,7 @@ services:
 
   rclone-mount:
     container_name: rclone-mount
-    image: mumiehub/rclone-mount:v1.66.0
+    image: mumiehub/rclone-mount:v1.67.0
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
@@ -264,7 +264,7 @@ services:
   ### Networking ###
 
   traefik:
-    image: traefik:v2.10
+    image: traefik:3.2.3
     container_name: traefik
     restart: always
     environment:
