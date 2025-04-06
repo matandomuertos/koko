@@ -5,6 +5,8 @@ volumes:
     driver: local
   alertmanager_data:
     driver: local
+  ollama:
+    driver: local
 
 networks:
   qbittorrent:
@@ -437,7 +439,7 @@ services:
     container_name: ollama
     restart: unless-stopped
     volumes:
-      - ollama:/tmp/.ollama
+      - ollama:/root/.ollama
     networks:
       - ollama
     labels:
