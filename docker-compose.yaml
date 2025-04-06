@@ -27,6 +27,8 @@ networks:
     driver: bridge
   test:
     driver: bridge
+  ollama:
+    driver: bridge
 
 services:
 
@@ -428,6 +430,24 @@ services:
       - "traefik.http.routers.test.tls.certresolver=cloudflare"
       - "traefik.http.routers.test.middlewares=test-whitelist"
       - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  ### AI ####
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama:/tmp/.ollama
+    networks:
+      - ollama
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN}`) || Host(`ollama.pub.${DOMAIN}`)"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+      - "traefik.http.routers.ollama.entrypoints=websecure"
+      - "traefik.http.routers.ollama.tls.certresolver=cloudflare"
+      - "traefik.http.routers.ollama.middlewares=ollama-whitelist"
+      - "traefik.http.middlewares.ollama-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
 
  ### OLD SERVICES ###
