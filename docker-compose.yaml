@@ -32,35 +32,58 @@ services:
 
   ### APPS ###
 
+  #qbittorrent:
+  #  image: binhex/arch-qbittorrentvpn
+  #  container_name: qbittorrent
+  #  restart: unless-stopped
+  #  cap_add:
+  #    - NET_ADMIN
+  #  environment:
+  #    - VPN_ENABLED=yes
+  #    - VPN_USER=${NORDVPN_USER}
+  #    - VPN_PASS=${NORDVPN_PASS}
+  #    - VPN_PROV=custom
+  #    - VPN_CLIENT=openvpn
+  #    - ENABLE_STARTUP_SCRIPTS=no
+  #    - LAN_NETWORK=${LAN_NETWORK}
+  #    - DEBUG=true
+  #    - PUID=1000
+  #    - PGID=1000
+  #  devices:
+  #    - /dev/net/tun
+  #  volumes:
+  #    - /bkp/docker/qbittorrentconfig:/config
+  #    - /download/qbittorrent:/data
+  #    - /etc/localtime:/etc/localtime:ro
+  #  networks:
+  #    - qbittorrent
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
+  #    - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+  #    - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+  #    - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+  #    - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
+  #    - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
   qbittorrent:
-    image: binhex/arch-qbittorrentvpn
+    image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
     environment:
-      - VPN_ENABLED=yes
-      - VPN_USER=${NORDVPN_USER}
-      - VPN_PASS=${NORDVPN_PASS}
-      - VPN_PROV=custom
-      - VPN_CLIENT=openvpn
-      - ENABLE_STARTUP_SCRIPTS=no
-      - LAN_NETWORK=${LAN_NETWORK}
-      - DEBUG=true
       - PUID=1000
       - PGID=1000
-    devices:
-      - /dev/net/tun
+      - TZ=Europe/Warsaw
+      - WEBUI_PORT=8081
     volumes:
       - /bkp/docker/qbittorrentconfig:/config
-      - /download/qbittorrent:/data
-      - /etc/localtime:/etc/localtime:ro
+      - /download/qbittorrent:/downloads
     networks:
       - qbittorrent
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
-      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
       - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
@@ -479,25 +502,3 @@ services:
   #    - "traefik.http.routers.pihole.middlewares=pihole-whitelist"
   #    - "traefik.http.middlewares.pihole-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-  # qbittorrent-old:
-  #   image: lscr.io/linuxserver/qbittorrent:latest
-  #   container_name: qbittorrent-old
-  #   restart: unless-stopped
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Europe/Warsaw
-  #     - WEBUI_PORT=8081
-  #   volumes:
-  #     - /bkp/docker/qbittorrentconfig-old:/config
-  #     - /download/qbittorrent:/downloads
-  #   networks:
-  #     - qbittorrent
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.qbittorrent-old.rule=Host(`qb-old.${DOMAIN}`) || Host(`qb-old.pub.${DOMAIN}`)"
-  #     - "traefik.http.services.qbittorrent-old.loadbalancer.server.port=8081"
-  #     - "traefik.http.routers.qbittorrent-old.entrypoints=websecure"
-  #     - "traefik.http.routers.qbittorrent-old.tls.certresolver=cloudflare"
-  #     - "traefik.http.routers.qbittorrent-old.middlewares=qbittorrent-old-whitelist"
-  #     - "traefik.http.middlewares.qbittorrent-old-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
