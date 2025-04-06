@@ -31,41 +31,6 @@ networks:
 services:
 
   ### APPS ###
-
-  #qbittorrent:
-  #  image: binhex/arch-qbittorrentvpn
-  #  container_name: qbittorrent
-  #  restart: unless-stopped
-  #  cap_add:
-  #    - NET_ADMIN
-  #  environment:
-  #    - VPN_ENABLED=yes
-  #    - VPN_USER=${NORDVPN_USER}
-  #    - VPN_PASS=${NORDVPN_PASS}
-  #    - VPN_PROV=custom
-  #    - VPN_CLIENT=openvpn
-  #    - ENABLE_STARTUP_SCRIPTS=no
-  #    - LAN_NETWORK=${LAN_NETWORK}
-  #    - DEBUG=true
-  #    - PUID=1000
-  #    - PGID=1000
-  #  devices:
-  #    - /dev/net/tun
-  #  volumes:
-  #    - /bkp/docker/qbittorrentconfig:/config
-  #    - /download/qbittorrent:/data
-  #    - /etc/localtime:/etc/localtime:ro
-  #  networks:
-  #    - qbittorrent
-  #  labels:
-  #    - "traefik.enable=true"
-  #    - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
-  #    - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
-  #    - "traefik.http.routers.qbittorrent.entrypoints=websecure"
-  #    - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
-  #    - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
-  #    - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
@@ -90,8 +55,8 @@ services:
       - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   plex:
-    container_name: plex
     image: plexinc/pms-docker:latest
+    container_name: plex
     restart: unless-stopped
     environment:
       - TZ=Europe/Warsaw
@@ -109,7 +74,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"
 
   gitea:
-    image: gitea/gitea:1.22.6
+    image: gitea/gitea:1.23
     container_name: gitea
     restart: unless-stopped
     environment:
@@ -176,7 +141,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   vaultwarden:
-    image: vaultwarden/server:1.30.1-alpine
+    image: vaultwarden/server:1.33.2-alpine
     container_name: vaultwarden
     restart: unless-stopped
     environment:
@@ -268,7 +233,7 @@ services:
 
   rclone-mount:
     container_name: rclone-mount
-    image: mumiehub/rclone-mount:v1.67.0
+    image: mumiehub/rclone-mount:v1.69.1
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
@@ -287,7 +252,7 @@ services:
   ### Networking ###
 
   traefik:
-    image: traefik:3.2.3
+    image: traefik:3.3.5
     container_name: traefik
     restart: always
     environment:
@@ -502,3 +467,36 @@ services:
   #    - "traefik.http.routers.pihole.middlewares=pihole-whitelist"
   #    - "traefik.http.middlewares.pihole-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
+  #qbittorrent-vpn:
+  #  image: binhex/arch-qbittorrentvpn
+  #  container_name: qbittorrent-vpn
+  #  restart: unless-stopped
+  #  cap_add:
+  #    - NET_ADMIN
+  #  environment:
+  #    - VPN_ENABLED=yes
+  #    - VPN_USER=${NORDVPN_USER}
+  #    - VPN_PASS=${NORDVPN_PASS}
+  #    - VPN_PROV=custom
+  #    - VPN_CLIENT=openvpn
+  #    - ENABLE_STARTUP_SCRIPTS=no
+  #    - LAN_NETWORK=${LAN_NETWORK}
+  #    - DEBUG=true
+  #    - PUID=1000
+  #    - PGID=1000
+  #  devices:
+  #    - /dev/net/tun
+  #  volumes:
+  #    - /bkp/docker/qbittorrentconfig:/config
+  #    - /download/qbittorrent:/data
+  #    - /etc/localtime:/etc/localtime:ro
+  #  networks:
+  #    - qbittorrent
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
+  #    - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+  #    - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+  #    - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+  #    - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
+  #    - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
