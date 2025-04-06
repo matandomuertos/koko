@@ -31,6 +31,8 @@ networks:
     driver: bridge
   ollama:
     driver: bridge
+  portainer:
+    driver: bridge
 
 services:
 
@@ -173,7 +175,7 @@ services:
       - /bkp/docker/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - test 
+      - portainer 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`) || Host(`portainer.pub.${DOMAIN}`)"
@@ -300,6 +302,8 @@ services:
       - monitoring
       - iperf3
       - test
+      - ollama
+      - portainer
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`) || Host(`tk.pub.${DOMAIN}`)"
