@@ -7,3 +7,5 @@
 */10 * * * * . /bkp/opensubs_user.env; subliminal --opensubtitles $OP_USERNAME $OP_PASSWORD download -l en /download/qbittorrent
 */10 * * * * . /bkp/opensubs_user.env; subliminal --opensubtitles $OP_USERNAME $OP_PASSWORD download -l es /download/qbittorrent
 0 5 * * 0 cd ~nahuel/koko && docker compose pull && docker compose up -d --force-recreate alertmanager iperf3 node-exporter cadvisor plex homeassistant grafana portainer uptime-kuma qbittorrent prometheus test timemachine && docker system prune -a -f
+0 4 * * * docker restart qbittorrent
+0 10 * * * hdparm -S /dev/sdc
