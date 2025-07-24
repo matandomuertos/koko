@@ -469,19 +469,19 @@ services:
       - n8n
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.n8n.rule=Host(`asdf.${DOMAIN}`) || Host(`asdf.pub.${DOMAIN}`)"
+      - "traefik.http.routers.n8n.rule=Host(`n8.${DOMAIN}`) || Host(`n8.pub.${DOMAIN}`)"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls.certresolver=cloudflare"
       - "traefik.http.routers.n8n.middlewares=n8n-whitelist"
       - "traefik.http.middlewares.n8n-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
     environment:
-      - N8N_HOST=asdf.${DOMAIN}
+      - N8N_HOST=n8.${DOMAIN}
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_RUNNERS_ENABLED=true
       - NODE_ENV=production
-      - WEBHOOK_URL=https://asdf.${DOMAIN}/
+      - WEBHOOK_URL=https://n8.${DOMAIN}/
       - GENERIC_TIMEZONE=Europe/Warsaw
     volumes:
       - n8n_data:/home/node/.n8n
