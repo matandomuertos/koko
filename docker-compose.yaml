@@ -7,6 +7,8 @@ volumes:
     driver: local
   ollama:
     driver: local
+  open-webui:
+    driver: local
   n8n_data:
     driver: local
 
@@ -444,7 +446,7 @@ services:
 
   ### AI ####
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:0.9.6
     container_name: ollama
     restart: unless-stopped
     volumes:
@@ -459,6 +461,25 @@ services:
       - "traefik.http.routers.ollama.tls.certresolver=cloudflare"
       - "traefik.http.routers.ollama.middlewares=ollama-whitelist"
       - "traefik.http.middlewares.ollama-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:0.6.18
+    container_name: open-webui
+    restart: unless-stopped
+    volumes:
+      - open-webui:/app/backend/data
+    networks:
+      - ollama
+    environment:
+      - 'OLLAMA_BASE_URL=http://192.168.0.51:11434' #TEST internal host
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openwebui.rule=Host(`open-webui.${DOMAIN}`) || Host(`open-webui.pub.${DOMAIN}`)"
+      - "traefik.http.services.openwebui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.openwebui.entrypoints=websecure"
+      - "traefik.http.routers.openwebui.tls.certresolver=cloudflare"
+      - "traefik.http.routers.openwebui.middlewares=openwebui-whitelist"
+      - "traefik.http.middlewares.openwebui-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
 ### TEST ###
   n8n:
