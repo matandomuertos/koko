@@ -1,0 +1,11 @@
+#10 4 * * * kill -9 `ps -ef | grep plexmediaplayer | grep -v grep | awk '{print $2}'`
+#15 4 * * * export DISPLAY=:0 && /usr/bin/plexmediaplayer
+#*/10 * * * * /bkp/fixPrivilegesMovies.sh
+0 * * * * rsync -avx --exclude 'timemachine' /bkp/docker /bkp/auth /bkp-ssd/ --delete
+0 3 * * * rsync -avx /bkp /usb/apollo/ --delete
+0 4 * * * rsync -avx /rclone/gdrive /bkp --delete
+*/10 * * * * docker run --rm --name subliminal -v /bkp/docker/sublime:/config -v /download/qbittorrent:/download/qbittorrent -v subliminal_cache:/usr/src/cache -it ghcr.io/diaoul/subliminal -c /config/config.toml download -l en /download/qbittorrent
+0 5 * * 0 cd ~nahuel/koko && docker compose pull && docker compose up -d --force-recreate alertmanager iperf3 node-exporter cadvisor plex homeassistant grafana portainer uptime-kuma qbittorrent prometheus test timemachine && docker system prune -a -f
+0 4 * * * docker restart qbittorrent
+0 10 * * * hdparm -S 15 /dev/sdc
+0 10 * * * hdparm -S 15 /dev/sdc1
