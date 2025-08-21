@@ -1,0 +1,9 @@
+# Managed by Ansible
+network:
+  version: 2
+  wifis:
+    wlo1:
+      dhcp4: true
+      access-points:
+        "{{ wifi_ssid }}":
+          password: "{{ wifi_password }}"

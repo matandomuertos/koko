@@ -1,3 +1,6 @@
 ---
 - name: Install root crontab
   shell: crontab /root/crontab.tmp -u root
+
+- name: Apply netplan
+  command: netplan apply

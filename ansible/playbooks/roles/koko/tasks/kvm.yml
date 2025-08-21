@@ -1,0 +1,31 @@
+- name: Install KVM and dependencies
+  apt:
+    name:
+      - qemu-kvm
+      - virt-manager
+      - libvirt-daemon-system
+      - virtinst
+      - libvirt-clients
+      - bridge-utils
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Ensure libvirtd service is enabled and running
+  systemd:
+    name: libvirtd
+    enabled: true
+    state: started
+  become: yes
+
+- name: Add user to kvm group
+  user:
+    name: "{{ user_name }}"
+    groups: kvm
+    append: yes
+
+- name: Add user to libvirt group
+  user:
+    name: "{{ user_name }}"
+    groups: libvirt
+    append: yes

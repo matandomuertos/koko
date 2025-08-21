@@ -1,46 +1,42 @@
 # Koko
-This repo has the files needed to install and configure my home server (`koko`) in just a few minutes.
-
-## Warning :warning:
-The script is designed to run only once and it does not include any checks for repeated runs. Running the script multiple times may result in failure and create unnecessary entries in the fstab or LVs.
+This repo has the files needed to install and configure my home server (`koko`) in just a few minutes using Ansible.
 
 ## Requirements
-- This repo assumes all Docker app config files are in `/bkp/docker` (`hdd-vg/bkp-lv`)
-- Clean installation of [Ubuntu Server 22.04](https://ubuntu.com/download/server)
-- An user: `nahuel`
-- Server IP: `192.168.31.167`
-- `35.42GB` of free space in the main VG
-- LVM:
-  - Main VG name: `ubuntu-vg`
-  - For additional FS:
-    - Additional VG name: `hdd-vg`
-    - `hdd-vg` structure:
-      - `download-lv` (ext4)
-      - `bkp-lv` (ext4)
-- [GoDaddy DNS entries](https://dcc.godaddy.com/control/) - DNS now managed by [CloudFlare](https://www.cloudflare.com/):
-  - Type A: `*` -> `192.168.31.167`
-  - Type A: `*.pub` -> NordVPN Meshnet IP
+- A clean installation of [Ubuntu Server 22.04](https://ubuntu.com/download/server)
+- User: `nahuel`
+- Server IP: `192.168.0.39`
+- Main VG: `ubuntu-vg` with at least `35.42GB` free
+- LVM structure for additional FS:
+  - VG name: `hdd-vg`
+    - `download-lv` (ext4)
+    - `bkp-lv` (ext4)
+- Docker app configuration files located in `/bkp/docker`
+- DNS managed via [Cloudflare](https://www.cloudflare.com/):
+  - Type A: `*` -> `192.168.0.39`
 
 ## How to use
-```
+```bash
 $ cd ~nahuel
 $ git clone https://github.com/matandomuertos/koko.git
-$ cd koko
-$ sudo ./init.sh
+$ cd koko/ansible
+$ ansible-playbook playbooks/init-koko.yml -i inventories/hosts -e 'wifi_ssid=WifiSSID wifi_password=WifiPassword' --ask-become-pass
 ```
+- The `--ask-become-pass` option is required if your user is not root.
+- You can run with `--check --diff` to see what changes would be applied without making them.
 
 ## What is doing?
 - Disable APT news
-- Update all packages
+- Update all installed packages
 - Create and mount Docker volume (`/var/lib/docker`)
 - Create and mount bkp-ssd volume (`/bkp-ssd`)
-- Install and configure [docker-ce](https://docs.docker.com/engine/install/ubuntu/) (with compose plugin)
-- Install PIP3
-- Install [subliminal](https://github.com/Diaoul/subliminal)
+- Configure optional USB mount (`/usb/apollo`) and standby via hdparm
+- Install and configure Docker CE with Compose plugin
+- Install Python3 and pip
+- Disable WiFi and configure system DNS via Netplan
+- Configure root crontab based on crontab
+- Install KVM
 - Clean up unused packages
-- Configure root crontab based on [crontab](https://github.com/matandomuertos/koko/blob/main/crontab) file
-- Customize resolv.conf (requires reboot)
-- Reboot the system
+- Reboot the system (if required)
 
 ## Post-reboot instructions
 - With the user `nahuel`, go to the directory `koko` and run `docker compose up -d` to run all the apps
@@ -57,6 +53,7 @@ $ sudo ./init.sh
 - [iPerf3](https://github.com/nerdalert/iperf3)
 - [Portainer](https://github.com/portainer/portainer)
 - [Home Assistant](https://github.com/home-assistant)
+- [Subliminal](https://github.com/Diaoul/subliminal)
 - Test web server ([nginx](https://hub.docker.com/r/nginxdemos/hello/))
 
 ## Apps abandoned
@@ -67,7 +64,6 @@ $ sudo ./init.sh
 
 ## Other apps
 - [k3d](https://k3d.io/) was installed manually
-- [NordVPN CLI](https://support.nordvpn.com/Connectivity/Linux/1325531132/Installing-and-using-NordVPN-on-Debian-Ubuntu-Raspberry-Pi-Elementary-OS-and-Linux-Mint.htm) was installed manually (and meshnet was configured manually too) 
 
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
