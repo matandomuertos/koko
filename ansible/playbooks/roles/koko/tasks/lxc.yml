@@ -1,0 +1,33 @@
+- name: Install LXC / LXD packages
+  apt:
+    name:
+      - lxc
+      - uidmap
+    state: present
+    update_cache: yes
+
+- name: Ensure LXD group exists
+  group:
+    name: lxd
+    state: present
+
+- name: Add user to LXD group
+  user:
+    name: "{{ user_name }}"
+    groups: lxd
+    append: yes
+
+- name: Initialize LXD with default config (non-interactive)
+  command: >
+    lxd init --auto
+  args:
+    creates: /var/snap/lxd/common/lxd/database/local.db
+
+- name: Configure LXD networking (bridge profile)
+  command: >
+    lxc network set lxdbr0 ipv4.address 10.246.60.1/24
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Ensure default profile uses bridged network
+  shell: |
+    lxc profile device add default eth0 nic nictype=bridged parent=lxdbr0 name=eth0 || true

@@ -1,0 +1,9 @@
+- import_tasks: system.yml
+- import_tasks: lvm.yml
+- import_tasks: network.yml
+- import_tasks: ssh.yml
+- import_tasks: kvm.yml
+- import_tasks: lxc.yml
+- import_tasks: docker.yml
+- import_tasks: k3d.yml
+# - import_tasks: reboot.yml

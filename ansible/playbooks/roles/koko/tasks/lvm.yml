@@ -1,0 +1,57 @@
+---
+- name: Create docker logical volume
+  community.general.lvol:
+    vg: "{{ vg_name }}"
+    lv: "{{ docker_lv }}"
+    size: "{{ docker_size }}"
+    state: present
+
+- name: Create XFS filesystem for docker LV
+  filesystem:
+    fstype: xfs
+    dev: "/dev/{{ vg_name }}/{{ docker_lv }}"
+
+- name: Mount docker LV
+  mount:
+    path: /var/lib/docker
+    src: "/dev/{{ vg_name }}/{{ docker_lv }}"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+
+- name: Create bkp-ssd logical volume
+  community.general.lvol:
+    vg: "{{ vg_name }}"
+    lv: "{{ bkp_lv }}"
+    size: "{{ bkp_size }}"
+    state: present
+
+- name: Create XFS filesystem for bkp LV
+  filesystem:
+    fstype: xfs
+    dev: "/dev/{{ vg_name }}/{{ bkp_lv }}"
+
+- name: Mount bkp LV
+  mount:
+    path: /bkp-ssd
+    src: "/dev/{{ vg_name }}/{{ bkp_lv }}"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+
+- name: Mount usb/apollo
+  mount:
+    path: /usb/apollo
+    src: /dev/sdc1
+    fstype: xfs
+    opts: defaults,nofail
+    state: mounted
+
+- name: Set hdparm standby timeout
+  command: hdparm -S 15 /dev/sdc
+  changed_when: false
+
+- name: Ensure rclone gdrive directory exists
+  file:
+    path: /rclone/gdrive
+    state: directory
