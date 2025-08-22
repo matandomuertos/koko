@@ -387,20 +387,6 @@ services:
       - "traefik.http.routers.grafana.middlewares=grafana-whitelist"
       - "traefik.http.middlewares.grafana-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor
-    restart: unless-stopped
-    privileged: true
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    networks:
-      - monitoring
-
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
@@ -417,6 +403,20 @@ services:
     networks:
       - monitoring
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - monitoring
+
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3:latest
     container_name: iperf3
@@ -426,23 +426,6 @@ services:
     command: -s
     ports:
       - "5201:5201"
-
-  ### Test ###
-
-  test:
-    image: nginxdemos/hello:latest
-    container_name: test
-    restart: unless-stopped
-    networks:
-      - test
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
-      - "traefik.http.services.test.loadbalancer.server.port=80"
-      - "traefik.http.routers.test.entrypoints=websecure"
-      - "traefik.http.routers.test.tls.certresolver=cloudflare"
-      - "traefik.http.routers.test.middlewares=test-whitelist"
-      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   ### AI ####
   ollama:
@@ -482,6 +465,21 @@ services:
       - "traefik.http.middlewares.openwebui-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
 ### TEST ###
+  test:
+    image: nginxdemos/hello:latest
+    container_name: test
+    restart: unless-stopped
+    networks:
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+      - "traefik.http.routers.test.entrypoints=websecure"
+      - "traefik.http.routers.test.tls.certresolver=cloudflare"
+      - "traefik.http.routers.test.middlewares=test-whitelist"
+      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
   n8n:
     image: docker.n8n.io/n8nio/n8n
     container_name: n8n
