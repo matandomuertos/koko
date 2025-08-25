@@ -12,7 +12,7 @@ terraform {
   }
 
   backend "local" {
-    path = "/bkp/terraform/ovh/terraform.tfstate"
+    path = "/bkp/tofu/ovh/terraform.tfstate"
   }
 }
 
