@@ -6,4 +6,5 @@
 - import_tasks: lxc.yml
 - import_tasks: docker.yml
 - import_tasks: k3d.yml
+- import_tasks: ansible.yml
 # - import_tasks: reboot.yml
