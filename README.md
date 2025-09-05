@@ -1,7 +1,31 @@
 # Koko
-This repo has the files needed to install and configure my home server (`koko`) in just a few minutes using Ansible.
+This repo has the files needed to install and configure my home server (`koko`) in just a few minutes using Ansible and OpenTofu.
 
-## Requirements
+## OpenTofu (External services)
+### Prerequisites
+- Install [tofu](https://www.terraform.io/downloads.html)
+  
+### Deploying
+```sh
+cd tofu/cloudflare
+tofu init
+tofu plan -var-file=/bkp/tofu/cloudflare/terraform.tfvars
+tofu apply -var-file=/bkp/tofu/cloudflare/terraform.tfvars
+```
+or
+```sh
+cd tofu/ovh
+export OVH_APPLICATION_KEY=123123
+export OVH_APPLICATION_SECRET=123123
+export OVH_CONSUMER_KEY=123123
+tofu init
+tofu plan -var-file=/bkp/tofu/ovh/terraform.tfvars
+tofu apply -var-file=/bkp/tofu/ovh/terraform.tfvars
+```
+
+## Ansible (Internal services)
+### Requirements
+- Ansible installed in your local machine
 - A clean installation of [Ubuntu Server 22.04](https://ubuntu.com/download/server)
 - User: `nahuel`
 - Server IP: `192.168.0.39`
@@ -14,7 +38,7 @@ This repo has the files needed to install and configure my home server (`koko`) 
 - DNS managed via [Cloudflare](https://www.cloudflare.com/):
   - Type A: `*` -> `192.168.0.39`
 
-## How to use
+### How to use
 ```bash
 $ cd ~nahuel
 $ git clone https://github.com/matandomuertos/koko.git
@@ -24,7 +48,7 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts -e 'wifi_ssid=Wi
 - The `--ask-become-pass` option is required if your user is not root.
 - You can run with `--check --diff` to see what changes would be applied without making them.
 
-## What is doing?
+### What is doing?
 - Disable APT news
 - Update all installed packages
 - Install Python, hdparm, network manager, Docker, KVM, LXC and K3d
@@ -35,10 +59,11 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts -e 'wifi_ssid=Wi
 - Configure root crontab
 - Reboot the system
 
-## Post-reboot instructions
+### Post-reboot instructions
 - With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `docker compose up -d` to run all the apps.
 
-## Apps running (Docker)
+## Docker
+### Apps running
 - [qBitorrent](https://hub.docker.com/r/linuxserver/qbittorrent)
 - [Plex](https://hub.docker.com/r/linuxserver/plex)
 - [Gitea](https://hub.docker.com/r/gitea/gitea)
@@ -56,11 +81,11 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts -e 'wifi_ssid=Wi
 - [Ollama](https://github.com/ollama/ollama)
 - [Open WebUI](https://github.com/open-webui/open-webui)
 
-## Apps Test (Docker)
+### Apps Test
 - [NGINX Test web server](https://hub.docker.com/r/nginxdemos/hello/)
 - [n8n](https://github.com/n8n-io/n8n)
 
-## Apps abandoned (Docker)
+### Apps abandoned
 - [Pi-hole](https://github.com/pi-hole/docker-pi-hole) - Not using it
 - [cftunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) - Not using it
 - [qBitorrent VPN](https://github.com/binhex/arch-qbittorrentvpn) - Moved back to standard qBitorrent
