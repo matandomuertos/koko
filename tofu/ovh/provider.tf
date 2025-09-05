@@ -17,7 +17,5 @@ terraform {
 }
 
 provider "ovh" {
-  endpoint      = "ovh-eu"
-  client_id     = var.client_id
-  client_secret = var.client_secret
+  endpoint = "ovh-eu"
 }

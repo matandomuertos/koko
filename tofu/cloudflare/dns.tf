@@ -33,5 +33,5 @@ resource "cloudflare_dns_record" "cname" {
   type    = "CNAME"
   comment = "CNAME for www"
   content = var.zone_name
-  proxied = true
+  proxied = false
 }
