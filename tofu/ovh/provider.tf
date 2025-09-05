@@ -3,11 +3,11 @@
 # export OVH_CONSUMER_KEY=123
 
 terraform {
-  required_version = "~> 1.10.0"
+  required_version = "~> 1.10"
   required_providers {
     ovh = {
       source  = "ovh/ovh"
-      version = "~> 2.7.0"
+      version = "~> 2.7"
     }
   }
 
