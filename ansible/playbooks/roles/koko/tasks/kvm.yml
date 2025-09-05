@@ -10,6 +10,8 @@
       - cloud-image-utils
       - virtinst
       - libguestfs-tools
+      - python3-lxml
+      - python3-libvirt
     state: present
     update_cache: yes
 
@@ -30,3 +32,21 @@
     name: "{{ user_name }}"
     groups: libvirt
     append: yes
+
+- name: Ensure libvirt default network is stopped and disabled
+  community.libvirt.virt_net:
+    name: default
+    state: absent
+    autostart: no
+
+- name: Define libvirt bridge network
+  community.libvirt.virt_net:
+    name: br0-net
+    state: present
+    autostart: yes
+    xml: |
+      <network>
+        <name>br0-net</name>
+        <forward mode='bridge'/>
+        <bridge name='br0'/>
+      </network>

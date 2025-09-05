@@ -12,7 +12,7 @@
     mode: 0644
   notify: Apply netplan
 
-- name: Deploy wifi netplan configuration (optional)
+- name: Deploy wifi netplan configuration
   template:
     src: 00-installer-config-wifi.yaml.j2
     dest: /etc/netplan/00-installer-config-wifi.yaml
