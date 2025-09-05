@@ -6,7 +6,7 @@ resource "cloudflare_zone" "wyppu" {
   type = "full"
 }
 
-resource "cloudflare_dns_record" "example_dns_record" {
+resource "cloudflare_dns_record" "main_domain" {
   zone_id = cloudflare_zone.wyppu.id
   name    = var.zone_name
   ttl     = 1 #auto
