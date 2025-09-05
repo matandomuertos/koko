@@ -17,3 +17,9 @@ variable "zone_name" {
   type        = string
   description = "The name of the DNS zone"
 }
+
+variable "koko_ip" {
+  type        = string
+  description = "The IP address for the Koko service"
+  default     = "192.168.0.39"
+}

@@ -6,17 +6,15 @@ resource "cloudflare_zone" "wyppu" {
   type = "full"
 }
 
-# resource "cloudflare_dns_record" "example_dns_record" {
-#   zone_id = cloudflare_zone.wyppu.id
-#   name    = "example.com"
-#   ttl     = 3600
-#   type    = "A"
-#   comment = "Domain verification record"
-#   content = "198.51.100.4"
-#   proxied = true
-#   settings = {
-#     ipv4_only = true
-#     ipv6_only = true
-#   }
-#   tags = ["owner:dns-team"]
-# }
+resource "cloudflare_dns_record" "example_dns_record" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = var.zone_name
+  ttl     = 1 #auto
+  type    = "A"
+  comment = "Main domain"
+  content = var.koko_ip
+  proxied = false
+  tags = [
+    "owner:koko"
+  ]
+}
