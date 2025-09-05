@@ -8,7 +8,7 @@
       - libvirt-clients
       - bridge-utils
       - cloud-image-utils
-      - virt-install
+      - virtinst
       - libguestfs-tools
     state: present
     update_cache: yes
