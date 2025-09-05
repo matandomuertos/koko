@@ -11,7 +11,6 @@ resource "cloudflare_dns_record" "main_domain" {
   name    = var.zone_name
   ttl     = 1 #auto
   type    = "A"
-  comment = "Main domain"
   content = var.koko_ip
   proxied = false
 }
@@ -21,7 +20,6 @@ resource "cloudflare_dns_record" "all_private" {
   name    = "*"
   ttl     = 1 #auto
   type    = "A"
-  comment = "All private subdomains"
   content = var.koko_ip
   proxied = false
 }
@@ -31,7 +29,6 @@ resource "cloudflare_dns_record" "cname" {
   name    = "www"
   ttl     = 1 #auto
   type    = "CNAME"
-  comment = "CNAME for www"
   content = var.zone_name
   proxied = false
 }
