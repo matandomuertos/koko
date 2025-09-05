@@ -14,7 +14,4 @@ resource "cloudflare_dns_record" "example_dns_record" {
   comment = "Main domain"
   content = var.koko_ip
   proxied = false
-  tags = [
-    "owner:koko"
-  ]
 }
