@@ -5,6 +5,10 @@ terraform {
       version = "~> 5.8"
     }
   }
+
+  backend "local" {
+    path = "/bkp/tofu/cloudflare/terraform.tfstate"
+  }
 }
 
 provider "cloudflare" {
