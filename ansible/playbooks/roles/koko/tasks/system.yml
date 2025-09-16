@@ -19,6 +19,7 @@
       - hdparm
       - python3-pip
       - network-manager
+      - nmon
     state: present
 
 - name: Autoremove unused packages
