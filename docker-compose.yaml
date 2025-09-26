@@ -417,6 +417,26 @@ services:
     networks:
       - monitoring
 
+  smartctl-exporter:
+    image: prometheuscommunity/smartctl-exporter
+    container_name: smartctl-exporter
+    restart: unless-stopped
+    privileged: true
+    user: root
+    networks:
+      - monitoring
+
+  qbittorrent-exporter:
+    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter
+    container_name: qbittorrent-exporter
+    restart: unless-stopped
+    environment:
+      - QBITTORRENT_PORT=8081
+      - QBITTORRENT_HOST=qbittorrent
+    networks:
+      - monitoring
+      - qbittorrent
+
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3:latest
     container_name: iperf3
