@@ -15,7 +15,7 @@
   community.general.lvol:
     vg: ubuntu-vg
     lv: docker-lv
-    size: 35.42g
+    size: 40.42g
     state: present
 
 - name: Create XFS filesystem for docker LV
