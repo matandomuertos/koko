@@ -88,7 +88,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"
 
   gitea:
-    image: gitea/gitea:1.23
+    image: gitea/gitea:latest
     container_name: gitea
     restart: unless-stopped
     environment:
@@ -175,7 +175,7 @@ services:
       - "traefik.http.middlewares.vaultwarden-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   portainer:
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-ce:lts
     container_name: portainer
     restart: unless-stopped
     command: -H unix:///var/run/docker.sock
@@ -203,7 +203,7 @@ services:
 
   homeassistant:
     container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
+    image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
     environment:
       DISABLE_JEMALLOC: true
@@ -456,7 +456,7 @@ services:
       - monitoring
 
   smartctl-exporter:
-    image: prometheuscommunity/smartctl-exporter
+    image: prometheuscommunity/smartctl-exporter:latest
     container_name: smartctl-exporter
     restart: unless-stopped
     privileged: true
@@ -465,7 +465,7 @@ services:
       - monitoring
 
   qbittorrent-exporter:
-    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter
+    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
     container_name: qbittorrent-exporter
     restart: unless-stopped
     environment:
@@ -489,7 +489,7 @@ services:
 
   ### AI ####
   ollama:
-    image: ollama/ollama:0.9.6
+    image: ollama/ollama:latest
     container_name: ollama
     restart: unless-stopped
     volumes:
@@ -506,7 +506,7 @@ services:
       - "traefik.http.middlewares.ollama-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   openwebui:
-    image: ghcr.io/open-webui/open-webui:0.6.18
+    image: ghcr.io/open-webui/open-webui:latest
     container_name: open-webui
     restart: unless-stopped
     volumes:
@@ -541,7 +541,7 @@ services:
       - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
     networks:
