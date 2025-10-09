@@ -1,0 +1,26 @@
+---
+- name: Ensure user 'nahuel' exists
+  user:
+    name: nahuel
+    comment: "Nahuel User"
+    password: "{{ nahuel_password | password_hash('sha512') }}"
+    shell: /bin/bash
+    state: present
+    create_home: yes
+    groups: sudo
+    append: yes
+  when: nahuel_password is defined
+
+- name: Ensure .ssh exists for nahuel
+  file:
+    path: /home/nahuel/.ssh
+    state: directory
+    owner: nahuel
+    group: nahuel
+    mode: '0700'
+
+- name: Add SSH public key for 'nahuel'
+  authorized_key:
+    user: nahuel
+    state: present
+    key: "{{ lookup('file', 'files/nahuel.pub') }}"

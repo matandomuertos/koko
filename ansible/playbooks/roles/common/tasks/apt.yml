@@ -1,0 +1,39 @@
+---
+- name: Ensure playbook runs as root
+  assert:
+    that: ansible_user_id == "root"
+    fail_msg: "Please run as root"
+
+- name: Disable APT news
+  command: pro config set apt_news=false
+  changed_when: false
+  ignore_errors: true
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Disable Proxmox enterprise repo
+  replace:
+    path: /etc/apt/sources.list.d/pve-enterprise.sources
+    regexp: '^Enabled:\s*true'
+    replace: 'Enabled: false'
+  when: "'kokopve' in group_names"
+
+- name: Disable Proxmox enterprise Ceph repo
+  replace:
+    path: /etc/apt/sources.list.d/ceph.sources
+    regexp: '^Enabled:\s*true'
+    replace: 'Enabled: false'
+  when: "'kokopve' in group_names"
+
+- name: Update and upgrade system
+  apt:
+    update_cache: yes
+    upgrade: yes
+
+- name: Install base packages
+  apt:
+    name: "{{ (vars['apt_packages'] | default([])) + (hostvars[inventory_hostname].apt_packages | default([])) | unique }}"
+    state: present
+
+- name: Autoremove unused packages
+  apt:
+    autoremove: yes

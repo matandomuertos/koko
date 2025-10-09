@@ -1,0 +1,4 @@
+---
+apt_packages:
+  - network-manager
+  - nmon
