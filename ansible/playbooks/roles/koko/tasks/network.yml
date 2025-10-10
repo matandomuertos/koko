@@ -12,12 +12,12 @@
     mode: 0644
   notify: Apply netplan
 
-- name: Deploy wifi netplan configuration
-  template:
-    src: 00-installer-config-wifi.yaml.j2
-    dest: /etc/netplan/00-installer-config-wifi.yaml
-    owner: root
-    group: root
-    mode: 0644
-  when: wifi_ssid is defined and wifi_password is defined
-  notify: Apply netplan
+# - name: Deploy wifi netplan configuration
+#   template:
+#     src: 00-installer-config-wifi.yaml.j2
+#     dest: /etc/netplan/00-installer-config-wifi.yaml
+#     owner: root
+#     group: root
+#     mode: 0644
+#   when: wifi_ssid is defined and wifi_password is defined
+#   notify: Apply netplan
