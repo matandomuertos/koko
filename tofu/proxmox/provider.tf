@@ -1,4 +1,5 @@
-# export PROXMOX_VE_PASSWORD=123
+# tofu init -backend-config=/bkp/tofu/backend.hcl
+# tofu plan -var-file=/bkp/tofu/proxmox/terraform.tfvars
 
 terraform {
   required_version = "~> 1.10"
@@ -9,21 +10,22 @@ terraform {
     }
   }
 
-  backend "local" {
-    path = "./terraform.tfstate"
+  backend "s3" {
+    key = "state/proxmox/opentofu.tfstate"
   }
 }
 
 provider "proxmox" {
-  endpoint = "https://192.168.0.100:8006/"
+  endpoint = var.proxmox_endpoint
 
-  username = "root@pam"
+  username = var.proxmox_username
+  password = var.proxmox_password
 
   insecure = true
 
   ssh {
     agent       = false
-    username    = "nahuel"
+    username    = var.proxmox_ssh_username
     private_key = file("~/.ssh/id_rsa")
   }
 }
