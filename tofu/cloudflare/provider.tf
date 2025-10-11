@@ -12,7 +12,7 @@ terraform {
   backend "s3" {
     bucket                      = "tf-bucket"
     region                      = "auto"
-    key                         = "state/cloudfare/opentofu.tfstate"
+    key                         = "state/cloudflare/opentofu.tfstate"
     skip_credentials_validation = true
     skip_metadata_api_check     = true
     skip_region_validation      = true
