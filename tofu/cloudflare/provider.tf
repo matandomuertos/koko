@@ -1,3 +1,4 @@
+# tofu init -backend-config=/bkp/tofu/backend.hcl
 # tofu apply -var-file=/bkp/tofu/cloudflare/terraform.tfvars
 
 terraform {
