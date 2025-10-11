@@ -1,0 +1,48 @@
+---
+- name: Disable WiFi via nmcli (Ubuntu only)
+  command: nmcli radio wifi off
+  changed_when: false
+  ignore_errors: true
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Deploy wired netplan configuration (Ubuntu)
+  template:
+    src: 00-installer-config.yaml.j2
+    dest: /etc/netplan/00-installer-config.yaml
+    owner: root
+    group: root
+    mode: 0644
+  notify: Apply netplan
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Deploy WiFi netplan configuration (Ubuntu)
+  template:
+    src: 00-installer-config-wifi.yaml.j2
+    dest: /etc/netplan/00-installer-config-wifi.yaml
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - wifi_ssid is defined
+    - wifi_password is defined
+  notify: Apply netplan
+
+- name: Disable WiFi on Proxmox
+  command: rfkill block wifi
+  changed_when: false
+  ignore_errors: true
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Configure WiFi on Proxmox (Debian)
+  copy:
+    dest: /etc/network/interfaces.d/wifi.cfg
+    content: |
+      auto wlo1
+      iface wlo1 inet dhcp
+          wpa-ssid {{ wifi_ssid }}
+          wpa-psk {{ wifi_password }}
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - wifi_ssid is defined
+    - wifi_password is defined

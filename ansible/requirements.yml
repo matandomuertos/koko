@@ -1,0 +1,4 @@
+roles:
+  - name: IronicBadger.proxmox_nag_removal
+    src: IronicBadger.proxmox_nag_removal
+    version: 1.0.2

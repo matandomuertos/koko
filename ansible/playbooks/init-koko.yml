@@ -1,5 +1,5 @@
 ---
 - hosts: koko
-  become: yes
+  become: true
   roles:
     - koko

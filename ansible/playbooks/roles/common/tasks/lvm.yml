@@ -1,0 +1,64 @@
+---
+- name: Create mount directories
+  file:
+    path: "{{ item.mount }}"
+    state: directory
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.mount is defined 
+
+- name: Create logical volumes
+  community.general.lvol:
+    vg: "{{ item.vg }}"
+    lv: "{{ item.name }}"
+    size: "{{ item.size }}"
+    state: present
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create filesystems
+  filesystem:
+    fstype: "{{ item.fstype }}"
+    dev: "/dev/{{ item.vg }}/{{ item.name }}"
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - not ansible_check_mode
+    - item.mount is defined 
+
+- name: Mount logical volumes
+  mount:
+    path: "{{ item.mount }}"
+    src: "/dev/{{ item.vg }}/{{ item.name }}"
+    fstype: "{{ item.fstype }}"
+    opts: defaults
+    state: mounted
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - not ansible_check_mode
+    - item.mount is defined
+
+- name: Create swap on swap LV
+  command: mkswap /dev/{{ item.vg }}/{{ item.name }}
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - not ansible_check_mode
+    - item.swap is defined
+    - ansible_memory_mb.swap.total == 0
+
+- name: Enable swap
+  command: swapon /dev/{{ item.vg }}/{{ item.name }}
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - not ansible_check_mode
+    - item.swap is defined
+    - ansible_memory_mb.swap.total == 0

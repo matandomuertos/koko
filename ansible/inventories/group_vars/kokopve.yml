@@ -1,0 +1,19 @@
+---
+lvs:
+  - name: swap-lv
+    vg: pve
+    size: 4G
+    swap: true
+  - name: data-lv
+    vg: pve
+    size: 200G
+    mount: /data
+    fstype: ext4
+  - name: iso-lv
+    vg: pve
+    size: 20G
+    mount: /iso
+    fstype: ext4
+
+apt_packages:
+  - sudo

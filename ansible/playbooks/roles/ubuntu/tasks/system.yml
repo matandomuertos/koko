@@ -1,0 +1,26 @@
+- name: Ensure playbook runs as root
+  assert:
+    that: ansible_user_id == "root"
+    fail_msg: "Please run as root"
+
+- name: Disable APT news
+  command: pro config set apt_news=false
+  changed_when: false
+  ignore_errors: true
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Update and upgrade system
+  apt:
+    update_cache: yes
+    upgrade: yes
+
+- name: Install base packages
+  apt:
+    name:
+      - network-manager
+      - nmon
+    state: present
+
+- name: Autoremove unused packages
+  apt:
+    autoremove: yes

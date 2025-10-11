@@ -1,0 +1,7 @@
+---
+- hosts: kokopve
+  gather_facts: true
+  become: true
+  roles:
+    - IronicBadger.proxmox_nag_removal
+    - common
