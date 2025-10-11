@@ -10,15 +10,14 @@ terraform {
 
   backend "s3" {
     bucket                      = "tf-bucket"
-    region                      = "EEUR"
-    key                         = "state/${path_relative_to_include()}/opentofu.tfstate"
+    region                      = "auto"
+    key                         = "state/cloudfare/opentofu.tfstate"
     skip_credentials_validation = true
     skip_metadata_api_check     = true
-    force_path_style            = true
-
-    endpoint = {
-      s3 = "https://${cloudflare_account_id}.r2.cloudflarestorage.com"
-    }
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+    use_path_style              = true
   }
 }
 
