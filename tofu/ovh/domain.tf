@@ -12,7 +12,9 @@ data "terraform_remote_state" "cloudflare" {
     skip_s3_checksum            = true
     use_path_style              = true
 
-    endpoints  = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com"
+    endpoints = {
+      s3 = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com"
+    }
     access_key = var.cloudflare_r2_access_key
     secret_key = var.cloudflare_r2_secret_key
   }

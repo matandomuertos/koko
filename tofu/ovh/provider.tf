@@ -1,5 +1,5 @@
 # tofu init -backend-config=/bkp/tofu/backend.hcl
-# tofu plan -backend-config=/bkp/tofu/backend.hcl -var-file=/bkp/tofu/ovh/terraform.tfvars
+# tofu plan -var-file=/bkp/tofu/ovh/terraform.tfvars
 
 terraform {
   required_version = "~> 1.10"
