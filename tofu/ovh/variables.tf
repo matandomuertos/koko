@@ -23,6 +23,11 @@ variable "cloudflare_account_id" {
   description = "Cloudflare account ID"
 }
 
+variable "cloudflare_r2_bucket" {
+  type        = string
+  description = "Cloudflare R2 Bucket Name"
+}
+
 variable "cloudflare_r2_access_key" {
   type        = string
   description = "Cloudflare R2 Access Key"

@@ -2,7 +2,7 @@ data "terraform_remote_state" "cloudflare" {
   backend = "s3"
 
   config = {
-    bucket                      = "tf-bucket"
+    bucket                      = var.cloudflare_r2_bucket
     region                      = "auto"
     key                         = "state/cloudflare/opentofu.tfstate"
     skip_credentials_validation = true
