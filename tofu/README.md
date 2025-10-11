@@ -1,205 +1,121 @@
-# tofu/cloudflare/buckets.tf
-resource "cloudflare_r2_bucket" "tf_bucket" {
-  account_id    = var.cloudflare_account_id
-  name          = "tf-bucket"
-  location      = "eeur"
-  storage_class = "Standard"
-}
+# Terraform Configurations for Cloudflare and OVH
 
-# tofu/cloudflare/dns.tf
-resource "cloudflare_zone" "wyppu" {
-  account = {
-    id = var.cloudflare_account_id
-  }
-  name = var.zone_name
-  type = "full"
-}
+This directory contains Terraform (or OpenTofu) configurations to manage DNS records on Cloudflare and domain names on OVH.
 
-resource "cloudflare_dns_record" "main_domain" {
-  zone_id = cloudflare_zone.wyppu.id
-  name    = var.zone_name
-  ttl     = 1 #auto
-  type    = "A"
-  content = var.koko_ip
-  proxied = false
-}
+## Table of Contents
 
-resource "cloudflare_dns_record" "all_private" {
-  zone_id = cloudflare_zone.wyppu.id
-  name    = "*"
-  ttl     = 1 #auto
-  type    = "A"
-  content = var.koko_ip
-  proxied = false
-}
+1.  [Introduction](#introduction)
+2.  [Prerequisites](#prerequisites)
+3.  [Setup](#setup)
+    *   [Cloudflare Configuration](#cloudflare-configuration)
+    *   [OVH Configuration](#ovh-configuration)
+4.  [Deployment](#deployment)
+    *   [Cloudflare Deployment](#cloudflare-deployment)
+    *   [OVH Deployment](#ovh-deployment)
+5.  [Managed Resources](#managed-resources)
 
-resource "cloudflare_dns_record" "cname" {
-  zone_id = cloudflare_zone.wyppu.id
-  name    = "www"
-  ttl     = 1 #auto
-  type    = "CNAME"
-  content = var.zone_name
-  proxied = false
-}
+## Introduction
 
-# tofu/cloudflare/outputs.tf
-output "cloudflare_name_servers" {
-  value = cloudflare_zone.wyppu.name_servers
-}
+These configurations allow you to automate the management of:
+*   **Cloudflare:** R2 buckets and DNS records for a specified zone.
+*   **OVH:** Domain name registration, linking it to Cloudflare's name servers.
 
-# tofu/cloudflare/provider.tf
-# tofu init -backend-config=/bkp/tofu/backend.hcl
-# tofu plan -var-file=/bkp/tofu/cloudflare/terraform.tfvars
+The Terraform state is managed using an S3-compatible backend, specifically Cloudflare R2.
 
-terraform {
-  required_providers {
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 5.11"
-    }
-  }
+## Prerequisites
 
-  backend "s3" {
-    key = "state/cloudflare/opentofu.tfstate"
-  }
-}
+Before you begin, ensure you have the following:
 
-provider "cloudflare" {
-  email     = var.cloudflare_email
-  api_token = var.cloudflare_api_token
-}
+*   **OpenTofu or Terraform CLI:** Installed on your system.
+*   **Cloudflare Account:** With an Account ID, API Token, and the email associated with your account.
+*   **OVH Account:** With Application Key, Application Secret, and Consumer Key.
+*   **Cloudflare R2 Bucket:** An existing R2 bucket to store Terraform state, along with its Access Key and Secret Key.
 
-# tofu/cloudflare/variables.tf
-variable "cloudflare_account_id" {
-  type        = string
-  description = "Cloudflare account ID"
-  sensitive   = true
-}
+## Setup
 
-variable "cloudflare_email" {
-  type        = string
-  description = "Your Cloudflare email"
-  sensitive   = true
-}
+### Cloudflare Configuration
 
-variable "cloudflare_api_token" {
-  type        = string
-  description = "Your Cloudflare API token"
-  sensitive   = true
-}
+1.  Navigate to the Cloudflare configuration directory:
+    ```bash
+    cd tofu/cloudflare
+    ```
+2.  Create a `terraform.tfvars` file in this directory to provide your sensitive Cloudflare credentials and other variables. Replace the placeholder values with your actual information:
+    ```hcl
+    cloudflare_account_id = "your_cloudflare_account_id"
+    cloudflare_email      = "your_cloudflare_email"
+    cloudflare_api_token  = "your_cloudflare_api_token"
+    zone_name             = "your_domain.com"
+    koko_ip               = "your_koko_service_ip" # Optional, defaults to "192.168.0.39"
+    ```
 
-variable "zone_name" {
-  type        = string
-  description = "The name of the DNS zone"
-}
+### OVH Configuration
 
-variable "koko_ip" {
-  type        = string
-  description = "The IP address for the Koko service"
-  default     = "192.168.0.39"
-}
+1.  Navigate to the OVH configuration directory:
+    ```bash
+    cd tofu/ovh
+    ```
+2.  Create a `terraform.tfvars` file in this directory to provide your sensitive OVH and Cloudflare R2 credentials. Replace the placeholder values with your actual information:
+    ```hcl
+    application_key       = "your_ovh_application_key"
+    application_secret    = "your_ovh_application_secret"
+    consumer_key          = "your_ovh_consumer_key"
+    domain_name           = "your_domain.com"
+    cloudflare_account_id = "your_cloudflare_account_id"
+    cloudflare_r2_bucket  = "your_r2_bucket_name"
+    cloudflare_r2_access_key = "your_r2_access_key"
+    cloudflare_r2_secret_key = "your_r2_secret_key"
+    ```
 
-# tofu/ovh/domain.tf
-data "terraform_remote_state" "cloudflare" {
-  backend = "s3"
+## Deployment
 
-  config = {
-    bucket                      = var.cloudflare_r2_bucket
-    region                      = "auto"
-    key                         = "state/cloudflare/opentofu.tfstate"
-    skip_credentials_validation = true
-    skip_metadata_api_check     = true
-    skip_region_validation      = true
-    skip_requesting_account_id  = true
-    skip_s3_checksum            = true
-    use_path_style              = true
+The deployment involves two main steps: first for Cloudflare resources, then for OVH resources.
 
-    endpoints = {
-      s3 = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com"
-    }
-    access_key = var.cloudflare_r2_access_key
-    secret_key = var.cloudflare_r2_secret_key
-  }
-}
+### Cloudflare Deployment
 
-resource "ovh_domain_name" "wyppu" {
-  domain_name = var.domain_name
+1.  Ensure you are in the `tofu/cloudflare` directory:
+    ```bash
+    cd tofu/cloudflare
+    ```
+2.  Initialize Terraform/OpenTofu, configuring the S3 backend. You will need a `backend.hcl` file at `/bkp/tofu/backend.hcl` or adjust the command to point to your backend configuration.
+    ```bash
+    opentofu init -backend-config=/bkp/tofu/backend.hcl
+    ```
+    *Note: The `backend.hcl` file should contain S3 backend configuration details if not already defined in `provider.tf`.* 
+3.  Review the planned changes:
+    ```bash
+    opentofu plan -var-file=terraform.tfvars
+    ```
+4.  Apply the changes to create/update Cloudflare resources:
+    ```bash
+    opentofu apply -var-file=terraform.tfvars
+    ```
 
-  target_spec = {
-    dns_configuration = {
-      name_server = data.terraform_remote_state.cloudflare.outputs.cloudflare_name_servers
-    }
-  }
-}
+### OVH Deployment
 
-# tofu/ovh/provider.tf
-# tofu init -backend-config=/bkp/tofu/backend.hcl
-# tofu plan -var-file=/bkp/tofu/ovh/terraform.tfvars
+1.  Ensure you are in the `tofu/ovh` directory:
+    ```bash
+    cd tofu/ovh
+    ```
+2.  Initialize Terraform/OpenTofu, configuring the S3 backend.
+    ```bash
+    opentofu init -backend-config=/bkp/tofu/backend.hcl
+    ```
+3.  Review the planned changes:
+    ```bash
+    opentofu plan -var-file=terraform.tfvars
+    ```
+4.  Apply the changes to create/update OVH resources:
+    ```bash
+    opentofu apply -var-file=terraform.tfvars
+    ```
 
-terraform {
-  required_version = "~> 1.10"
-  required_providers {
-    ovh = {
-      source  = "ovh/ovh"
-      version = "~> 2.8"
-    }
-  }
+## Managed Resources
 
-  backend "s3" {
-    key = "state/ovh/opentofu.tfstate"
-  }
-}
-
-provider "ovh" {
-  endpoint           = "ovh-eu"
-  application_key    = var.application_key
-  application_secret = var.application_secret
-  consumer_key       = var.consumer_key
-}
-
-# tofu/ovh/variables.tf
-variable "application_key" {
-  description = "OVH application key"
-  type        = string
-  sensitive   = true
-}
-
-variable "application_secret" {
-  description = "OVH application secret"
-  type        = string
-  sensitive   = true
-}
-
-variable "consumer_key" {
-  description = "OVH consumer key"
-  type        = string
-  sensitive   = true
-}
-
-variable "domain_name" {
-  type        = string
-  description = "The name of the domain"
-}
-
-variable "cloudflare_account_id" {
-  type        = string
-  description = "Cloudflare account ID"
-  sensitive   = true
-}
-
-variable "cloudflare_r2_bucket" {
-  type        = string
-  description = "Cloudflare R2 Bucket Name"
-}
-
-variable "cloudflare_r2_access_key" {
-  type        = string
-  description = "Cloudflare R2 Access Key"
-  sensitive   = true
-}
-
-variable "cloudflare_r2_secret_key" {
-  type        = string
-  description = "Cloudflare R2 Secret Key"
-  sensitive   = true
-}
+*   **`cloudflare/buckets.tf`**: Manages a Cloudflare R2 bucket.
+*   **`cloudflare/dns.tf`**: Configures A and CNAME DNS records within your Cloudflare zone.
+*   **`cloudflare/outputs.tf`**: Exports the Cloudflare name servers, which are then used by the OVH configuration.
+*   **`cloudflare/provider.tf`**: Sets up the Cloudflare provider and configures the S3 backend for state management.
+*   **`cloudflare/variables.tf`**: Defines input variables for the Cloudflare configuration.
+*   **`ovh/domain.tf`**: Manages the OVH domain name, setting its name servers to those provided by Cloudflare.
+*   **`ovh/provider.tf`**: Sets up the OVH provider and configures the S3 backend for state management.
+*   **`ovh/variables.tf`**: Defines input variables for the OVH configuration, including Cloudflare R2 details for remote state access.
