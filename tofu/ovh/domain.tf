@@ -1,7 +1,22 @@
 data "terraform_remote_state" "cloudflare" {
-  backend = "local"
+  backend = "s3"
+
   config = {
-    path = "/bkp/tofu/cloudflare/terraform.tfstate"
+    bucket                      = var.cloudflare_r2_bucket
+    region                      = "auto"
+    key                         = "state/cloudflare/opentofu.tfstate"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+
+    endpoints = {
+      s3 = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com"
+    }
+    access_key = var.cloudflare_r2_access_key
+    secret_key = var.cloudflare_r2_secret_key
   }
 }
 

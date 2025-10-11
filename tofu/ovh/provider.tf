@@ -1,21 +1,23 @@
-# export OVH_APPLICATION_KEY=123
-# export OVH_APPLICATION_SECRET=123
-# export OVH_CONSUMER_KEY=123
+# tofu init -backend-config=/bkp/tofu/backend.hcl
+# tofu plan -var-file=/bkp/tofu/ovh/terraform.tfvars
 
 terraform {
   required_version = "~> 1.10"
   required_providers {
     ovh = {
       source  = "ovh/ovh"
-      version = "~> 2.7"
+      version = "~> 2.8"
     }
   }
 
-  backend "local" {
-    path = "/bkp/tofu/ovh/terraform.tfstate"
+  backend "s3" {
+    key = "state/ovh/opentofu.tfstate"
   }
 }
 
 provider "ovh" {
-  endpoint = "ovh-eu"
+  endpoint           = "ovh-eu"
+  application_key    = var.application_key
+  application_secret = var.application_secret
+  consumer_key       = var.consumer_key
 }
