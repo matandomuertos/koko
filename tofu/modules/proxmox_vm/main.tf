@@ -1,7 +1,3 @@
-data "local_file" "ssh_public_key" {
-  filename = var.ssh_public_key_file
-}
-
 resource "proxmox_virtual_environment_vm" "vm" {
   name            = var.name
   node_name       = var.node_name
@@ -64,7 +60,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
     user_account {
       username = var.username
-      keys     = [trimspace(data.local_file.ssh_public_key.content)]
+      keys     = var.ssh_key
       password = var.user_password != "" ? var.user_password : null
     }
 

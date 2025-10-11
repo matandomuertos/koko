@@ -1,9 +1,11 @@
 module "test_ubuntu_vm" {
   source = "../modules/proxmox_vm"
 
-  name                = "test-ubuntu"
-  ssh_public_key_file = "${path.module}/files/nahuel.pub"
-  ip_address          = "192.168.0.151/24"
+  name          = "test-ubuntu"
+  username      = var.vm_username
+  user_password = var.vm_password
+  ssh_key       = var.vm_ssh_key
+  ip_address    = "192.168.0.151/24"
 
   main_disk_size = 40
 

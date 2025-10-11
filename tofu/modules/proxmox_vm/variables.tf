@@ -57,9 +57,9 @@ variable "main_disk_discard" {
   default     = "on"
 }
 
-variable "ssh_public_key_file" {
+variable "ssh_key" {
   description = "Path to the public SSH key to use"
-  type        = string
+  type        = list(string)
 }
 
 variable "gateway" {
@@ -82,7 +82,6 @@ variable "dns_servers" {
 variable "username" {
   description = "Username for cloud-init"
   type        = string
-  default     = "ubuntu"
 }
 
 variable "user_password" {
