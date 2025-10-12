@@ -1,4 +1,4 @@
-module "test_ubuntu_vm" {
+module "koko" {
   source = "../modules/proxmox_vm"
 
   name          = "koko"
