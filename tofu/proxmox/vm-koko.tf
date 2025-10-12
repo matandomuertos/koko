@@ -8,7 +8,7 @@ module "koko" {
   ip_address    = "192.168.0.102/24"
 
   main_disk_size    = 100
-  main_disk_discard = ignore
+  main_disk_discard = "ignore"
 
   raw_disks = [
     {
