@@ -34,5 +34,5 @@ module "koko" {
     }
   ]
 
-  tags = ["koko"]
+  tags = ["koko", "prod"]
 }
