@@ -46,6 +46,8 @@ resource "proxmox_virtual_environment_vm" "vm" {
     }
   }
 
+  keyboard_layout = var.keyboard_layout
+
   network_device {
     bridge = "vmbr0"
   }

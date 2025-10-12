@@ -21,6 +21,12 @@ variable "os_type" {
   default     = "l26"
 }
 
+variable "keyboard_layout" {
+  description = "Keyboard Layout"
+  type        = string
+  default     = "pl"
+}
+
 variable "qemu_agent" {
   description = "Whether to enable the QEMU agent"
   type        = bool
