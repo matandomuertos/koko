@@ -21,6 +21,12 @@ variable "os_type" {
   default     = "l26"
 }
 
+variable "keyboard_layout" {
+  description = "Keyboard Layout"
+  type        = string
+  default     = "pl"
+}
+
 variable "qemu_agent" {
   description = "Whether to enable the QEMU agent"
   type        = bool
@@ -55,6 +61,12 @@ variable "main_disk_discard" {
   description = "Enable discard on the main disk (on/off)"
   type        = string
   default     = "on"
+}
+
+variable "main_disk_backup" {
+  description = "Enable backup on the main disk"
+  type        = bool
+  default     = true
 }
 
 variable "ssh_key" {
@@ -134,6 +146,7 @@ variable "additional_disks" {
     interface = string
     iothread  = bool
     discard   = string
+    backup    = bool
   }))
   default = []
 }

@@ -1,4 +1,14 @@
 ---
+- name: Create volume groups if defined
+  community.general.lvg:
+    vg: "{{ item.name }}"
+    pvs: "{{ item.pvs }}"
+    state: present
+  loop: "{{ vgs | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: vgs is defined
+
 - name: Create mount directories
   file:
     path: "{{ item.mount }}"

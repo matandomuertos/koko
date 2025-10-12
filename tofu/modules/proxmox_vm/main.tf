@@ -31,6 +31,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     iothread     = false
     discard      = var.main_disk_discard
     size         = var.main_disk_size
+    backup       = var.main_disk_backup
   }
 
   dynamic "disk" {
@@ -41,8 +42,11 @@ resource "proxmox_virtual_environment_vm" "vm" {
       interface    = disk.value.interface
       iothread     = disk.value.iothread
       discard      = disk.value.discard
+      backup       = disk.value.backup
     }
   }
+
+  keyboard_layout = var.keyboard_layout
 
   network_device {
     bridge = "vmbr0"

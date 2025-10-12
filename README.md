@@ -8,17 +8,14 @@ This repo has the files needed to install and configure my home server (`koko`) 
 ### Deploying
 ```sh
 cd tofu/cloudflare
-tofu init
+tofu init -backend-config=/bkp/tofu/backend.hcl
 tofu plan -var-file=/bkp/tofu/cloudflare/terraform.tfvars
 tofu apply -var-file=/bkp/tofu/cloudflare/terraform.tfvars
 ```
 or
 ```sh
 cd tofu/ovh
-export OVH_APPLICATION_KEY=123123
-export OVH_APPLICATION_SECRET=123123
-export OVH_CONSUMER_KEY=123123
-tofu init
+tofu init -backend-config=/bkp/tofu/backend.hcl
 tofu plan -var-file=/bkp/tofu/ovh/terraform.tfvars
 tofu apply -var-file=/bkp/tofu/ovh/terraform.tfvars
 ```

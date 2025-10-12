@@ -1,4 +1,9 @@
 ---
+vgs:
+  - name: hdd-vg
+    pvs:
+      - /dev/sda
+
 lvs:
   - name: swap-lv
     vg: pve
@@ -13,6 +18,11 @@ lvs:
     vg: pve
     size: 20G
     mount: /iso
+    fstype: ext4
+  - name: koko-hdd-lv
+    vg: hdd-vg
+    size: 1863G
+    mount: /data-hdd
     fstype: ext4
 
 apt_packages:
