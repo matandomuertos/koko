@@ -12,14 +12,22 @@ module "koko" {
   memory_floating  = 24576
   ip_address       = "192.168.0.102/24"
 
-  main_disk_size    = 100
+  main_disk_size    = 40
   main_disk_discard = "ignore"
 
   additional_disks = [
     {
+      size      = 60
+      datastore = "data"
+      interface = "scsi1"
+      iothread  = false
+      discard   = "ignore"
+      backup    = false
+    },
+    {
       size      = 400
       datastore = "data-hdd"
-      interface = "scsi1"
+      interface = "scsi2"
       iothread  = false
       discard   = "ignore"
       backup    = false
