@@ -13,7 +13,7 @@ module "koko" {
   raw_disks = [
     {
       interface         = "scsi1"
-      path_in_datastore = "/dev/hdd-vg/koko-hdd-lv"
+      path_in_datastore = "hdd-vg:koko-hdd-lv"
       iothread          = true
     }
   ]
