@@ -10,7 +10,7 @@ module "koko" {
   main_disk_size    = 100
   main_disk_discard = ignore
 
-  additional_disks = [
+  raw_disks = [
     {
       interface         = "scsi"
       path_in_datastore = "/dev/hdd-vg/koko-hdd-lv"
