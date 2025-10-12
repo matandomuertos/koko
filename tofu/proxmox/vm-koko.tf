@@ -15,22 +15,22 @@ module "koko" {
   main_disk_size    = 40
   main_disk_discard = "ignore"
 
-  additional_disks = [
-    {
-      size      = 60
-      datastore = "data"
-      interface = "scsi1"
-      iothread  = false
-      discard   = "ignore"
-      backup    = false
-    },
-    {
-      size      = 400
-      datastore = "data-hdd"
-      interface = "scsi2"
-      iothread  = false
-      discard   = "ignore"
-      backup    = false
-    }
-  ]
+  # additional_disks = [
+  #   {
+  #     size      = 60
+  #     datastore = "data"
+  #     interface = "scsi1"
+  #     iothread  = false
+  #     discard   = "ignore"
+  #     backup    = false
+  #   },
+  #   {
+  #     size      = 400
+  #     datastore = "data-hdd"
+  #     interface = "scsi2"
+  #     iothread  = false
+  #     discard   = "ignore"
+  #     backup    = false
+  #   }
+  # ]
 }
