@@ -140,7 +140,7 @@ variable "additional_disks" {
     interface = string
     iothread  = bool
     discard   = string
-    discard   = bool
+    backup    = bool
   }))
   default = []
 }
