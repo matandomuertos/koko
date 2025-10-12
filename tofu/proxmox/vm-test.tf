@@ -16,6 +16,7 @@ module "test_ubuntu_vm" {
       interface = "scsi1"
       iothread  = false
       discard   = "on"
+      backup    = false
     }
   ]
 }

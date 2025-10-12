@@ -31,6 +31,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     iothread     = false
     discard      = var.main_disk_discard
     size         = var.main_disk_size
+    backup       = var.main_disk_backup
   }
 
   dynamic "disk" {
@@ -41,15 +42,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
       interface    = disk.value.interface
       iothread     = disk.value.iothread
       discard      = disk.value.discard
-    }
-  }
-
-  dynamic "disk" {
-    for_each = var.raw_disks
-    content {
-      interface         = disk.value.interface
-      path_in_datastore = disk.value.path_in_datastore
-      iothread          = disk.value.iothread
+      backup       = disk.value.backup
     }
   }
 

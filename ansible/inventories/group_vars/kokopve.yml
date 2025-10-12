@@ -21,7 +21,9 @@ lvs:
     fstype: ext4
   - name: koko-hdd-lv
     vg: hdd-vg
-    size: 300G
+    size: 1863G
+    mount: /data-hdd
+    fstype: ext4
 
 apt_packages:
   - sudo

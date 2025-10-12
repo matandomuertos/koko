@@ -57,6 +57,12 @@ variable "main_disk_discard" {
   default     = "on"
 }
 
+variable "main_disk_backup" {
+  description = "Enable backup on the main disk"
+  type        = bool
+  default     = true
+}
+
 variable "ssh_key" {
   description = "Path to the public SSH key to use"
   type        = list(string)
@@ -134,16 +140,7 @@ variable "additional_disks" {
     interface = string
     iothread  = bool
     discard   = string
-  }))
-  default = []
-}
-
-variable "raw_disks" {
-  description = "List of raw devices or logical volumes to attach directly to the VM."
-  type = list(object({
-    path_in_datastore = string
-    interface         = string
-    iothread          = bool
+    discard   = bool
   }))
   default = []
 }
