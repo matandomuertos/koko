@@ -7,6 +7,7 @@ module "koko" {
   ssh_key       = var.vm_ssh_key
 
   cpu_cores        = 6
+  cpu_type         = "host"
   memory_dedicated = 16384
   memory_floating  = 24576
   ip_address       = "192.168.0.102/24"
