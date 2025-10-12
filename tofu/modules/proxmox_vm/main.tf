@@ -44,6 +44,15 @@ resource "proxmox_virtual_environment_vm" "vm" {
     }
   }
 
+  dynamic "disk" {
+    for_each = var.raw_disks
+    content {
+      interface         = disk.value.interface
+      path_in_datastore = disk.value.path_in_datastore
+      iothread          = disk.value.iothread
+    }
+  }
+
   network_device {
     bridge = "vmbr0"
   }

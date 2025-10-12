@@ -137,3 +137,13 @@ variable "additional_disks" {
   }))
   default = []
 }
+
+variable "raw_disks" {
+  description = "List of raw devices or logical volumes to attach directly to the VM."
+  type = list(object({
+    path_in_datastore = string
+    interface         = string
+    iothread          = bool
+  }))
+  default = []
+}
