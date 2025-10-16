@@ -2,7 +2,7 @@ provider "proxmox" {
   endpoint = "${proxmox_endpoint}"
 
   username = "${proxmox_username}"
-  password = "${var.proxmox_password}"
+  password = "${proxmox_password}"
 
   insecure = true
 

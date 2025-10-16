@@ -1,3 +1,3 @@
-module "koko" {
-  source = "../../../modules/proxmox_vm"
+terraform {
+  source = "../../../../modules/proxmox_vm"
 }

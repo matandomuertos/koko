@@ -2,7 +2,7 @@ terraform_version_constraint  = ">= 1.10"
 terragrunt_version_constraint = ">= 0.91"
 
 locals {
-  common_vars   = read_terragrunt_config("environments/_common/vars.hcl")
+  common_vars  = read_terragrunt_config("${get_repo_root()}/tofu/proxmox/environments/_common/vars.hcl")
   secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
   backend_vars = read_terragrunt_config("/bkp/tofu/tg-backend.hcl")
 
@@ -28,11 +28,11 @@ generate "backend.tf" {
   path      = "backend.tf"
   if_exists = "overwrite_terragrunt"
   contents = templatefile("backend.tf.tpl", {
-    bucket      = local.bucket_key_path.locals.bucket
+    bucket      = local.backend_vars.locals.bucket
     key         = local.bucket_key_path
-    access_key  = local.bucket_key_path.locals.access_key
-    secret_key  = local.bucket_key_path.locals.secret_key
-    s3_endpoint = local.bucket_key_path.locals.s3_endpoint
+    access_key  = local.backend_vars.locals.access_key
+    secret_key  = local.backend_vars.locals.secret_key
+    s3_endpoint = local.backend_vars.locals.endpoints.s3
   })
 }
 
