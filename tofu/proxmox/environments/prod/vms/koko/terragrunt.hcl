@@ -8,7 +8,7 @@ include "env" {
 
 locals {
   secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
-  env_vars     = read_terragrunt_config(find_in_parent_folders("vars.hcl"))
+  env_vars     = read_terragrunt_config(find_in_parent_folders("${get_repo_root()}/environments/_common/vars.hcl"))
 }
 
 inputs = {

@@ -2,7 +2,6 @@ terraform_version_constraint  = ">= 1.10"
 terragrunt_version_constraint = ">= 0.91"
 
 locals {
-  common_vars  = read_terragrunt_config(find_in_parent_folders("../../_envcommon/vars.hcl"))
   secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
   backend_vars = read_terragrunt_config("/bkp/tofu/tg-backend.hcl")
 
