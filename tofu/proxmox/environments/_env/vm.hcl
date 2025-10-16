@@ -1,3 +1,3 @@
 module "koko" {
-  source = "../modules/proxmox_vm"
+  source = "../../../modules/proxmox_vm"
 }
