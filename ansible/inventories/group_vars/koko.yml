@@ -6,6 +6,9 @@ vgs:
   - name: hdd-vg
     pvs:
       - /dev/sdb
+  - name: hdd-timemachine-vg
+    pvs:
+      - /dev/sdd
 
 lvs:
   - name: swap-lv
@@ -31,6 +34,11 @@ lvs:
     vg: hdd-vg
     size: 150G
     mount: /downloads
+    fstype: ext4
+  - name: timemachine-lv
+    vg: hdd-timemachine-vg
+    size: 249G
+    mount: /bkp/docker/timemachine
     fstype: ext4
 
 apt_packages:

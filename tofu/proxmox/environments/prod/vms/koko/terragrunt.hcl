@@ -41,7 +41,15 @@ inputs = {
       interface = "scsi2"
       iothread  = false
       discard   = "ignore"
-      backup    = false
+      backup    = true
+    },
+    {
+      size      = 250
+      datastore = "data-hdd"
+      interface = "scsi3"
+      iothread  = false
+      discard   = "ignore"
+      backup    = true
     }
   ]
 
