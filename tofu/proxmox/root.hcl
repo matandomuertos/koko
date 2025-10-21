@@ -6,7 +6,7 @@ locals {
   secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
   backend_vars = read_terragrunt_config("/bkp/tofu/tg-backend.hcl")
 
-  bucket_key_path = "terragrunt/koko/proxmox/${path_relative_to_include()}/opentofu.tfstate"
+  bucket_key_path = "state/proxmox/terragrunt/${path_relative_to_include()}/opentofu.tfstate"
 
   proxmox_provider_version = local.common_vars.locals.proxmox_provider_version
 }
@@ -17,7 +17,7 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents = templatefile("provider.tf.tpl", {
     proxmox_endpoint     = local.secrets_vars.locals.proxmox_endpoint
-    proxmox_username     = local.secrets_vars.locals.proxmox_endpoint
+    proxmox_username     = local.secrets_vars.locals.proxmox_username
     proxmox_password     = local.secrets_vars.locals.proxmox_password
     proxmox_ssh_username = local.secrets_vars.locals.proxmox_ssh_username
   })
