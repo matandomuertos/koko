@@ -31,7 +31,7 @@
 
 - name: Install base packages
   apt:
-    name: "{{ (vars['apt_packages'] | default([])) + (hostvars[inventory_hostname].apt_packages | default([])) | unique }}"
+    name: "{{ (base_apt_packages | default([])) + (apt_packages | default([])) | unique }}"
     state: present
 
 - name: Autoremove unused packages

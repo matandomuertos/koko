@@ -1,0 +1,25 @@
+---
+- name: Check if oh-my-zsh is installed
+  stat:
+    path: "/home/{{ ansible_user }}/.oh-my-zsh"
+  register: oh_my_zsh_stat
+  become: false
+
+- name: Install oh-my-zsh
+  shell: "sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" \"\" --unattended"
+  args:
+    creates: "/home/{{ ansible_user }}/.oh-my-zsh"
+  when: not oh_my_zsh_stat.stat.exists
+  become: false
+
+- name: Configure .zshrc
+  template:
+    src: .zshrc.j2
+    dest: "/home/{{ ansible_user }}/.zshrc"
+  become: false
+
+- name: Change shell to zsh
+  user:
+    name: "{{ ansible_user }}"
+    shell: /bin/zsh
+

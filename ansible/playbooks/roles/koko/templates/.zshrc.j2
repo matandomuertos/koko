@@ -1,0 +1,35 @@
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
+#Theme
+ZSH_THEME="daveverwer"
+
+# Plugins
+plugins=(python)
+
+### https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/python
+PYTHON_AUTO_VRUN=true
+
+source $ZSH/oh-my-zsh.sh
+
+### User configuration ###
+
+# Disable tab menu
+setopt noautomenu
+setopt nomenucomplete
+
+# Disable auto update to speed up init
+DISABLE_AUTO_UPDATE=true
+
+# KREW required
+# export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# Export usr bin
+export PATH="/home/nahuel/.local/bin:$PATH"
+
+# Aliases
+## MISC ##
+alias kubectl="kubecolor"
+# compdef kubecolor=kubectl ## autocomplete kubecolors as kubectl
+alias k='kubectl'
+alias kube='kubectl'

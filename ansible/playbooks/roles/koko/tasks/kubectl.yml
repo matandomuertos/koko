@@ -1,0 +1,43 @@
+---
+- name: Get latest stable kubectl version
+  uri:
+    url: https://dl.k8s.io/release/stable.txt
+    return_content: yes
+  register: kubectl_version
+
+- name: Download kubectl
+  get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
+    dest: /tmp/kubectl
+    mode: '0755'
+
+- name: Move kubectl to /usr/local/bin
+  copy:
+    src: /tmp/kubectl
+    dest: /usr/local/bin/kubectl
+    remote_src: yes
+    mode: '0755'
+
+- name: Get latest kubecolor version
+  uri:
+    url: https://api.github.com/repos/hidetatz/kubecolor/releases/latest
+    return_content: yes
+  register: kubecolor_release
+
+- name: Download kubecolor
+  get_url:
+    url: "https://github.com/hidetatz/kubecolor/releases/download/{{ kubecolor_release.json.tag_name }}/kubecolor_{{ kubecolor_release.json.tag_name | replace('v', '') }}_Linux_x86_64.tar.gz"
+    dest: /tmp/kubecolor.tar.gz
+
+- name: Unarchive kubecolor
+  unarchive:
+    src: /tmp/kubecolor.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Move kubecolor to /usr/local/bin
+  copy:
+    src: /tmp/kubecolor
+    dest: /usr/local/bin/kubecolor
+    remote_src: yes
+    mode: '0755'

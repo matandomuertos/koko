@@ -1,4 +1,4 @@
 ---
-apt_packages:
+base_apt_packages:
   - network-manager
   - nmon
