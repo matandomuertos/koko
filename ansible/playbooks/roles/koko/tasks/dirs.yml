@@ -1,0 +1,7 @@
+---
+- name: Create mount directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /rclone/gdrive

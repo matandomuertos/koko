@@ -3,29 +3,6 @@
     that: ansible_user_id == "root"
     fail_msg: "Please run as root"
 
-- name: Disable APT news
-  command: pro config set apt_news=false
-  changed_when: false
-  ignore_errors: true
-
-- name: Update and upgrade system
-  apt:
-    update_cache: yes
-    upgrade: yes
-
-- name: Install base packages
-  apt:
-    name:
-      - hdparm
-      - python3-pip
-      - network-manager
-      - nmon
-    state: present
-
-- name: Autoremove unused packages
-  apt:
-    autoremove: yes
-
 - name: Install root crontab
   copy:
     src: crontab
