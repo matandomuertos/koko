@@ -1,0 +1,38 @@
+---
+vgs:
+  - name: ssd-vg
+    pvs:
+      - /dev/sdc
+  - name: hdd-vg
+    pvs:
+      - /dev/sdb
+
+lvs:
+  - name: swap-lv
+    vg: ssd-vg
+    size: 4G
+    swap: true
+  - name: docker-lv
+    vg: ssd-vg
+    size: 40G
+    mount: /var/lib/docker
+    fstype: ext4
+  - name: bkp-ssd-lv
+    vg: ssd-vg
+    size: 5G
+    mount: /bkp-ssd
+    fstype: ext4
+  - name: bkp-lv
+    vg: hdd-vg
+    size: 200G
+    mount: /bkp
+    fstype: ext4
+  - name: downloads-lv
+    vg: hdd-vg
+    size: 150G
+    mount: /downloads
+    fstype: ext4
+
+apt_packages:
+  - hdparm
+  - python3-pip

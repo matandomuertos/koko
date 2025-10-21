@@ -1,0 +1,3 @@
+- name: Install Ansible and Passlib globally via pip
+  ansible.builtin.command:
+    cmd: pip3 install ansible passlib --break-system-packages

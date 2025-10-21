@@ -1,10 +1,1 @@
-vg_name: ubuntu-vg
-docker_lv: docker-lv
-docker_size: 35.42G
-bkp_lv: bkpssd-lv
-bkp_size: 20G
-
 user_name: nahuel
-
-wifi_ssid: "{{ lookup('env', 'WIFI_SSID') | default('') }}"
-wifi_password: "{{ lookup('env', 'WIFI_PASSWORD') | default('') }}"

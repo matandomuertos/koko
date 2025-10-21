@@ -50,8 +50,8 @@
     groups: docker
     append: yes
 
-- name: Link docker env file
-  file:
-    src: /bkp/docker/envs
-    dest: "/home/{{ user_name }}/koko/.env"
-    state: link
+# - name: Link docker env file
+#   file:
+#     src: /bkp/docker/envs
+#     dest: "/home/{{ user_name }}/koko/.env"
+#     state: link
