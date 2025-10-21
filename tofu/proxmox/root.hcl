@@ -1,3 +1,5 @@
+## terragrunt run --all plan
+
 terraform_version_constraint  = ">= 1.10"
 terragrunt_version_constraint = ">= 0.91"
 
