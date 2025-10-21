@@ -1,10 +1,21 @@
-module "koko" {
-  source = "../modules/proxmox_vm"
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
 
+include "env" {
+  path = "${get_terragrunt_dir()}/../../../_env/vm.hcl"
+}
+
+locals {
+  secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
+  env_vars     = read_terragrunt_config("../../env.hcl")
+}
+
+inputs = {
   name          = "koko"
-  username      = var.vm_username
-  user_password = var.vm_password
-  ssh_key       = var.vm_ssh_key
+  username      = local.secrets_vars.locals.vm_username
+  user_password = local.secrets_vars.locals.vm_password
+  ssh_key       = local.secrets_vars.locals.vm_ssh_key
 
   cpu_cores        = 6
   cpu_type         = "host"
@@ -34,5 +45,5 @@ module "koko" {
     }
   ]
 
-  tags = ["prod"]
+  tags = local.env_vars.locals.tags
 }
