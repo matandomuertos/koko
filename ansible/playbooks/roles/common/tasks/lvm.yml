@@ -53,6 +53,20 @@
     - not ansible_check_mode
     - item.mount is defined
 
+- name: Set owner and permissions on mount directories
+  ansible.builtin.file:
+    path: "{{ item.mount }}"
+    owner: nahuel
+    group: nahuel
+    mode: '0775'
+    state: directory
+  loop: "{{ lvs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - item.mount is defined
+    - item.swap is not defined
+
 - name: Create swap on swap LV
   command: mkswap /dev/{{ item.vg }}/{{ item.name }}
   loop: "{{ lvs }}"

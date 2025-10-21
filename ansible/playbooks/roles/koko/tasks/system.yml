@@ -9,3 +9,6 @@
     dest: /root/crontab.tmp
     mode: '0644'
   notify: Install root crontab
+
+- name: Apply root crontab if updated
+  shell: crontab /root/crontab.tmp -u root
