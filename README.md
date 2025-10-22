@@ -1,18 +1,21 @@
 # Koko
-This repo has the files needed to install and configure my home server (`koko`) in just a few minutes using Ansible and OpenTofu.
+This repo has the files needed to install and configure my home server (`koko`) in just a few minutes using Ansible, Terragrunt and OpenTofu.
 
-## OpenTofu (External services)
 ### Prerequisites
-- Install [tofu](https://www.terraform.io/downloads.html)
-  
-### Deploying
+- Ansible, tofu and terragrunt installed in your local machine
+- All secret and config files in `/bkp/tofu`
+- Proxmox running in the server
+
+## OpenTofu (External Services)
+### Deploy Cloudflare DNS config
 ```sh
 cd tofu/cloudflare
 tofu init -backend-config=/bkp/tofu/backend.hcl
 tofu plan -var-file=/bkp/tofu/cloudflare/terraform.tfvars
 tofu apply -var-file=/bkp/tofu/cloudflare/terraform.tfvars
 ```
-or
+
+### Deploy OVH config
 ```sh
 cd tofu/ovh
 tofu init -backend-config=/bkp/tofu/backend.hcl
@@ -20,44 +23,44 @@ tofu plan -var-file=/bkp/tofu/ovh/terraform.tfvars
 tofu apply -var-file=/bkp/tofu/ovh/terraform.tfvars
 ```
 
-## Ansible (Internal services)
-### Requirements
-- Ansible installed in your local machine
-- A clean installation of [Ubuntu Server 24.04](https://ubuntu.com/download/server)
-- User: `nahuel`
-- Server IP: `192.168.0.39`
-- Main VG: `ubuntu-vg` with at least `35.42GB` free
-- LVM structure for additional FS:
-  - VG name: `hdd-vg`
-    - `download-lv` (ext4)
-    - `bkp-lv` (ext4)
-- Docker app configuration files located in `/bkp/docker`
-- DNS managed via [Cloudflare](https://www.cloudflare.com/):
-  - Type A: `*` -> `192.168.0.102`
+## Configure Proxmox
+### Ansible
+```bash
+$ cd ~nahuel
+$ git clone https://github.com/matandomuertos/koko.git
+$ cd koko/ansible
+$ ansible-playbook playbooks/init-kokopve.yml -i inventories/hosts.yml --ask-become-pass
+```
+- The `--ask-become-pass` option is required if your user is not root.
+- You can run with `--check --diff` to see what changes would be applied without making them.
 
-### How to use
+### Terragrunt
+#### Deploy Proxmox Base config
+```sh
+cd tofu/proxmox_base
+tofu init -backend-config=/bkp/tofu/backend.hcl
+tofu plan -var-file=/bkp/tofu/proxmox/terraform.tfvars
+tofu apply -var-file=/bkp/tofu/proxmox/terraform.tfvars
+```
+
+#### Deploy Proxmox VMs
+```sh
+cd tofu/proxmox
+terragrunt run --all plan
+terragrunt run --all apply
+```
+
+## Configure Koko server
 ```bash
 $ cd ~nahuel
 $ git clone https://github.com/matandomuertos/koko.git
 $ cd koko/ansible
 $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become-pass
 ```
-- The `--ask-become-pass` option is required if your user is not root.
-- You can run with `--check --diff` to see what changes would be applied without making them.
-
-### What is doing?
-- Disable APT news
-- Update all installed packages
-- Install Python, hdparm, network manager, Docker, KVM, LXC and K3d
-- Create and mount Docker volume (`/var/lib/docker`)
-- Create and mount bkp-ssd volume (`/bkp-ssd`)
-- Configure optional USB mount (`/usb/apollo`) and standby (via hdparm)
-- Configure network via netplan
-- Configure root crontab
-- Reboot the system
 
 ### Post-reboot instructions
-- With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `docker compose up -d` to run all the apps.
+- Share USB with the VM using Proxmox GUI and run `sudo modprobe cp210x` in the VM
+- With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `ln -s /bkp/docker/envs .env && docker compose up -d` to run all the apps.
 
 ## Docker
 ### Apps running
@@ -100,4 +103,4 @@ There are a few more apps that could be tested and added to the init script:
 - Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma) -> Prom and Grafana already running
 - [FileBroswer](https://github.com/filebrowser/filebrowser)
 - [Kasm](https://www.kasmweb.com/docs/latest/index.html)
-- Backup docker FS and all secrets somewhere out of the server
+- Backup docker FS and all secrets somewhere out of the server (Cloudflare R2?)
