@@ -34,6 +34,12 @@
     name: "{{ (base_apt_packages | default([])) + (apt_packages | default([])) | unique }}"
     state: present
 
+- name: Install linux-modules-extra for current kernel
+  apt:
+    name: "linux-modules-extra-{{ ansible_kernel }}"
+    state: present
+  when: ansible_facts['distribution'] == "Ubuntu"
+
 - name: Autoremove unused packages
   apt:
     autoremove: yes

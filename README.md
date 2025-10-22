@@ -23,7 +23,7 @@ tofu apply -var-file=/bkp/tofu/ovh/terraform.tfvars
 ## Ansible (Internal services)
 ### Requirements
 - Ansible installed in your local machine
-- A clean installation of [Ubuntu Server 22.04](https://ubuntu.com/download/server)
+- A clean installation of [Ubuntu Server 24.04](https://ubuntu.com/download/server)
 - User: `nahuel`
 - Server IP: `192.168.0.39`
 - Main VG: `ubuntu-vg` with at least `35.42GB` free
@@ -33,14 +33,14 @@ tofu apply -var-file=/bkp/tofu/ovh/terraform.tfvars
     - `bkp-lv` (ext4)
 - Docker app configuration files located in `/bkp/docker`
 - DNS managed via [Cloudflare](https://www.cloudflare.com/):
-  - Type A: `*` -> `192.168.0.39`
+  - Type A: `*` -> `192.168.0.102`
 
 ### How to use
 ```bash
 $ cd ~nahuel
 $ git clone https://github.com/matandomuertos/koko.git
 $ cd koko/ansible
-$ ansible-playbook playbooks/init-koko.yml -i inventories/hosts -e 'wifi_ssid=WifiSSID wifi_password=WifiPassword' --ask-become-pass
+$ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become-pass
 ```
 - The `--ask-become-pass` option is required if your user is not root.
 - You can run with `--check --diff` to see what changes would be applied without making them.

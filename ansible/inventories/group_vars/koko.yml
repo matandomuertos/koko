@@ -2,13 +2,13 @@
 vgs:
   - name: ssd-vg
     pvs:
-      - /dev/sdc
+      - /dev/sdd
   - name: hdd-vg
     pvs:
-      - /dev/sdb
+      - /dev/sdc
   - name: hdd-timemachine-vg
     pvs:
-      - /dev/sdd
+      - /dev/sdb
 
 lvs:
   - name: swap-lv
