@@ -24,5 +24,5 @@ variable "zone_name" {
 variable "koko_ip" {
   type        = string
   description = "The IP address for the Koko service"
-  default     = "192.168.0.39"
+  default     = "192.168.0.102"
 }
