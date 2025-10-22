@@ -26,3 +26,15 @@ variable "koko_ip" {
   description = "The IP address for the Koko service"
   default     = "192.168.0.102"
 }
+
+variable "koko_pve1_ip" {
+  type        = string
+  description = "The IP address for the Koko PVE1 service"
+  default     = "192.168.0.100"
+}
+
+variable "koko_pve2_ip" {
+  type        = string
+  description = "The IP address for the Koko PVE2 service"
+  default     = "192.168.0.101"
+}

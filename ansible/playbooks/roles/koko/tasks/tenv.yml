@@ -1,0 +1,21 @@
+---
+- name: Get latest tenv version from GitHub
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/tofuutils/tenv/releases/latest
+    body_format: json
+  register: tenv_release
+  check_mode: no
+
+- name: Set tenv version fact
+  ansible.builtin.set_fact:
+    tenv_version: "{{ tenv_release.json.tag_name }}"
+
+- name: Download tenv .deb package
+  ansible.builtin.get_url:
+    url: "https://github.com/tofuutils/tenv/releases/latest/download/tenv_{{ tenv_version }}_amd64.deb"
+    dest: "/tmp/tenv_{{ tenv_version }}_amd64.deb"
+    mode: '0644'
+
+- name: Install tenv
+  ansible.builtin.apt:
+    deb: "/tmp/tenv_{{ tenv_version }}_amd64.deb"

@@ -5,4 +5,5 @@
 - import_tasks: kubectl.yml
 - import_tasks: pip.yml
 - import_tasks: zsh.yml
+- import_tasks: tenv.yml
 # - import_tasks: reboot.yml

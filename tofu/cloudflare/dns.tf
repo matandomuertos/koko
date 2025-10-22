@@ -24,6 +24,24 @@ resource "cloudflare_dns_record" "all_private" {
   proxied = false
 }
 
+resource "cloudflare_dns_record" "proxmox" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "proxmox"
+  ttl     = 1 #auto
+  type    = "A"
+  content = var.koko_pve1_ip
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "proxmox2" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "proxmox2"
+  ttl     = 1 #auto
+  type    = "A"
+  content = var.koko_pve2_ip
+  proxied = false
+}
+
 resource "cloudflare_dns_record" "cname" {
   zone_id = cloudflare_zone.wyppu.id
   name    = "www"
