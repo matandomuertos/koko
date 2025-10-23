@@ -27,3 +27,4 @@ lvs:
 
 apt_packages:
   - sudo
+  - xsensors

@@ -2,3 +2,7 @@ roles:
   - name: IronicBadger.proxmox_nag_removal
     src: IronicBadger.proxmox_nag_removal
     version: 1.0.2
+
+collections:
+  - name: prometheus.prometheus
+    version: 0.27.3

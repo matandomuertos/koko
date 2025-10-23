@@ -43,7 +43,6 @@ networks:
     driver: bridge
 
 services:
-
   ### APPS ###
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
@@ -183,7 +182,7 @@ services:
       - /bkp/docker/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - portainer 
+      - portainer
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`) || Host(`portainer.pub.${DOMAIN}`)"
@@ -252,16 +251,16 @@ services:
     cap_add:
       - SYS_ADMIN
     security_opt:
-      - 'apparmor:unconfined'
+      - "apparmor:unconfined"
     volumes:
-      - '/bkp/docker/rclone/config:/config'
-      - '/rclone/gdrive:/mnt/mediaefs:shared'
+      - "/bkp/docker/rclone/config:/config"
+      - "/rclone/gdrive:/mnt/mediaefs:shared"
     devices:
       - /dev/fuse
     environment:
-      - 'RemotePath=gdrive:'
-      - 'MountCommands=--allow-other --allow-non-empty --buffer-size 256M'
-      - 'ConfigName=rclone.conf'
+      - "RemotePath=gdrive:"
+      - "MountCommands=--allow-other --allow-non-empty --buffer-size 256M"
+      - "ConfigName=rclone.conf"
 
   your-spotify-mongo-mongo:
     image: mongo:6
@@ -365,10 +364,10 @@ services:
     container_name: prometheus
     restart: unless-stopped
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.size=8192MB'
-      - '--storage.tsdb.retention.time=30d'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.size=8192MB"
+      - "--storage.tsdb.retention.time=30d"
     volumes:
       - /bkp/docker/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -430,10 +429,10 @@ services:
     container_name: node-exporter
     restart: unless-stopped
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -455,15 +454,6 @@ services:
     networks:
       - monitoring
 
-  smartctl-exporter:
-    image: prometheuscommunity/smartctl-exporter:latest
-    container_name: smartctl-exporter
-    restart: unless-stopped
-    privileged: true
-    user: root
-    networks:
-      - monitoring
-
   qbittorrent-exporter:
     image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
     container_name: qbittorrent-exporter
@@ -476,6 +466,15 @@ services:
     networks:
       - monitoring
       - qbittorrent
+
+  proxmox-exporter:
+    image: prompve/prometheus-pve-exporter:latest
+    container_name: proxmox-exporter
+    restart: unless-stopped
+    volumes:
+      - /bkp/docker/monitoring/proxmox.yml:/etc/prometheus/pve.yml
+    networks:
+      - monitoring
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     image: networkstatic/iperf3:latest
@@ -514,7 +513,7 @@ services:
     networks:
       - ollama
     environment:
-      - 'OLLAMA_BASE_URL=http://192.168.0.51:11434' #TEST internal host
+      - "OLLAMA_BASE_URL=http://192.168.0.51:11434" #TEST internal host
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.openwebui.rule=Host(`open-webui.${DOMAIN}`) || Host(`open-webui.pub.${DOMAIN}`)"
@@ -524,7 +523,7 @@ services:
       - "traefik.http.routers.openwebui.middlewares=openwebui-whitelist"
       - "traefik.http.middlewares.openwebui-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-### TEST ###
+  ### TEST ###
   test:
     image: nginxdemos/hello:latest
     container_name: test
@@ -565,8 +564,7 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
 
-
- ### OLD SERVICES ###
+  ### OLD SERVICES ###
   # cftunnel:
   #   image: cloudflare/cloudflared:2023.5.1
   #   container_name: cftunnel

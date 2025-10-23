@@ -29,6 +29,7 @@ tofu apply -var-file=/bkp/tofu/ovh/terraform.tfvars
 $ cd ~nahuel
 $ git clone https://github.com/matandomuertos/koko.git
 $ cd koko/ansible
+$ ansible-galaxy install -r requirements.yml
 $ ansible-playbook playbooks/init-kokopve.yml -i inventories/hosts.yml --ask-become-pass
 ```
 - The `--ask-become-pass` option is required if your user is not root.
@@ -80,10 +81,10 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 - [iPerf3](https://github.com/nerdalert/iperf3)
 - [Ollama](https://github.com/ollama/ollama)
 - [Open WebUI](https://github.com/open-webui/open-webui)
+- [n8n](https://github.com/n8n-io/n8n)
 
 ### Apps Test
 - [NGINX Test web server](https://hub.docker.com/r/nginxdemos/hello/)
-- [n8n](https://github.com/n8n-io/n8n)
 
 ### Apps abandoned
 - [Pi-hole](https://github.com/pi-hole/docker-pi-hole) - Not using it
