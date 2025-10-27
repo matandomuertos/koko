@@ -77,7 +77,7 @@ services:
     volumes:
       - /bkp/docker/plexconfig:/config
       - transcode_plex:/transcode
-      - /download:/download
+      - /downloads:/download
     network_mode: host
     labels:
       - "traefik.enable=true" # Actually, it's not working without port (plex.${DOMAIN}:32400) because plex doesn't like reverse proxies
