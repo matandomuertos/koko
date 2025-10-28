@@ -1,0 +1,19 @@
+---
+- name: Ensure TSO is disabled for eno1
+  lineinfile:
+    path: /etc/network/interfaces
+    insertafter: '^iface eno1'
+    line: '    post-up ethtool -K eno1 tso off'
+    state: present
+
+- name: Ensure TSO is disabled for vmbr0
+  lineinfile:
+    path: /etc/network/interfaces
+    insertafter: '^iface vmbr0'
+    line: '    post-up ethtool -K vmbr0 tso off'
+    state: present
+
+- name: Apply ethtool settings immediately
+  shell: |
+    ethtool -K eno1 tso off
+    ethtool -K vmbr0 tso off

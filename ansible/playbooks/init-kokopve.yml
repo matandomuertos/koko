@@ -6,3 +6,8 @@
     - IronicBadger.proxmox_nag_removal
     - common
     - proxmox
+
+- hosts: 192.168.0.100
+  become: true
+  roles:
+    - pve1
