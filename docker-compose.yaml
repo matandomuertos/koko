@@ -513,7 +513,8 @@ services:
     networks:
       - ollama
     environment:
-      - "OLLAMA_BASE_URL=http://192.168.0.51:11434" #TEST internal host
+      # - "OLLAMA_BASE_URL=http://192.168.0.51:11434" #TEST internal host
+      - "OLLAMA_BASE_URL=http://ollama:11434"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.openwebui.rule=Host(`open-webui.${DOMAIN}`) || Host(`open-webui.pub.${DOMAIN}`)"
