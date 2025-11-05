@@ -1,0 +1,19 @@
+---
+vgs:
+  - name: hdd-vg
+    pvs:
+      - /dev/sdb
+
+lvs:
+  - name: swap-lv
+    vg: pbs
+    size: 4G
+    swap: true
+  - name: data-lv
+    vg: hdd-vg
+    size: 1495G
+    mount: /bkp
+    fstype: ext4
+
+apt_packages:
+  - sudo

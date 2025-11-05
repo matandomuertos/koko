@@ -29,5 +29,16 @@ inputs = {
   main_disk_size      = 40
   main_disk_discard   = "ignore"
 
+  additional_disks = [
+    {
+      size      = 1500
+      datastore = "data-hdd2"
+      interface = "scsi1"
+      iothread  = false
+      discard   = "ignore"
+      backup    = false
+    }
+  ]
+
   tags = local.env_vars.locals.tags
 }

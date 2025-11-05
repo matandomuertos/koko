@@ -95,7 +95,12 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 - [homarr](https://github.com/ajnart/homarr) - Still prefer my custom dashboard
 
 ## PBS
-Installed from the ISO manually.
+- Installed from the ISO manually.
+- Removed premium repositories manually.
+- Basic config by ansible (`ansible-playbook playbooks/init-pbs.yml -i inventories/hosts.yml --ask-become-pass`).
+- Datastore created manually.
+- Added manually to Proxmox Cluster.
+- VM backups created manually in Promox Cluster.
 
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config

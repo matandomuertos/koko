@@ -1,0 +1,33 @@
+---
+vgs:
+  - name: hdd-vg
+    pvs:
+      - /dev/sdb
+
+lvs:
+  - name: docker-lv
+    vg: hdd-vg
+    size: 20G
+    mount: /var/lib/docker
+    fstype: ext4
+  - name: bkp-lv
+    vg: hdd-vg
+    size: 20G
+    mount: /bkp
+    fstype: ext4
+  - name: downloads-lv
+    vg: hdd-vg
+    size: 10G
+    mount: /downloads
+    fstype: ext4
+  - name: timemachine-lv
+    vg: hdd-vg
+    size: 10G
+    mount: /bkp/docker/timemachine
+    fstype: ext4
+
+apt_packages:
+  - hdparm
+  - python3-pip
+  - zsh
+  - git

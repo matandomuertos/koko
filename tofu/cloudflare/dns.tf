@@ -24,6 +24,15 @@ resource "cloudflare_dns_record" "all_private" {
   proxied = false
 }
 
+resource "cloudflare_dns_record" "all_private_dev" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "*.dev"
+  ttl     = 1 #auto
+  type    = "A"
+  content = var.koko_dev_ip
+  proxied = false
+}
+
 resource "cloudflare_dns_record" "proxmox" {
   zone_id = cloudflare_zone.wyppu.id
   name    = "proxmox"
@@ -39,6 +48,15 @@ resource "cloudflare_dns_record" "proxmox2" {
   ttl     = 1 #auto
   type    = "A"
   content = var.koko_pve2_ip
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "pbs" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "pbs"
+  ttl     = 1 #auto
+  type    = "A"
+  content = var.koko_pbs_ip
   proxied = false
 }
 

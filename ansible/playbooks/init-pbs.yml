@@ -1,9 +1,7 @@
 ---
-- hosts: 
-    - koko
-    - koko-dev
+- hosts: pbs
   gather_facts: true
   become: true
   roles:
     - common
-    - koko
+    - proxmox
