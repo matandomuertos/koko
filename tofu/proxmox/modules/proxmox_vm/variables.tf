@@ -39,7 +39,7 @@ variable "qemu_agent_timeout" {
   default     = "15m"
 }
 
-variable "disk_datastore" {
+variable "main_disk_datastore" {
   description = "Datastore for VM disks"
   type        = string
   default     = "data"
@@ -49,6 +49,12 @@ variable "cloud_image_name" {
   description = "Name of the pre-downloaded cloud image in Proxmox datastore"
   type        = string
   default     = "ubuntu2204-amd64.qcow2"
+}
+
+variable "import_cloud_image_enabled" {
+  description = "Whether to import the cloud image to the main disk"
+  type        = bool
+  default     = true
 }
 
 variable "main_disk_size" {
@@ -149,4 +155,10 @@ variable "additional_disks" {
     backup    = bool
   }))
   default = []
+}
+
+variable "usb_skyconnect_enabled" {
+  description = "Whether to enable USB SkyConnect device"
+  type        = bool
+  default     = false
 }

@@ -60,7 +60,7 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 ```
 
 ### Post-reboot instructions
-- Share USB with the VM using Proxmox GUI and run `sudo modprobe cp210x` in the VM
+- To enable the SkyConnect usb run `sudo modprobe cp210x` in the VM
 - With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `ln -s /bkp/docker/envs .env && docker compose up -d` to run all the apps.
 
 ## Docker
@@ -93,6 +93,9 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 - [Watchover](https://github.com/containrrr/watchtower) - Quite overkill, the crontab works good enough
 - [homer](https://github.com/bastienwirtz/homer) - Still prefer my custom dashboard
 - [homarr](https://github.com/ajnart/homarr) - Still prefer my custom dashboard
+
+## PBS
+Installed from the ISO manually.
 
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config

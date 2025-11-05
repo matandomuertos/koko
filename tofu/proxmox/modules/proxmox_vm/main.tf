@@ -1,3 +1,11 @@
+locals {
+  iso_datastore_mapping = {
+    "koko-pve1" = "iso"
+    "koko-pve2" = "iso2"
+  }
+  iso_datastore = lookup(local.iso_datastore_mapping, var.node_name, "iso")
+}
+
 resource "proxmox_virtual_environment_vm" "vm" {
   name            = var.name
   node_name       = var.node_name
@@ -25,8 +33,8 @@ resource "proxmox_virtual_environment_vm" "vm" {
   }
 
   disk {
-    datastore_id = var.disk_datastore
-    import_from  = "iso:import/${var.cloud_image_name}"
+    datastore_id = var.main_disk_datastore
+    import_from  = var.import_cloud_image_enabled ? "${local.iso_datastore}:import/${var.cloud_image_name}" : null
     interface    = "scsi0"
     iothread     = false
     discard      = var.main_disk_discard
@@ -52,24 +60,51 @@ resource "proxmox_virtual_environment_vm" "vm" {
     bridge = "vmbr0"
   }
 
-  initialization {
-    datastore_id = var.disk_datastore
+  dynamic "usb" {
+    for_each = var.usb_skyconnect_enabled ? [1] : []
 
-    ip_config {
-      ipv4 {
-        address = var.ip_address
-        gateway = var.gateway
-      }
-    }
-
-    user_account {
-      username = var.username
-      keys     = var.ssh_key
-      password = var.user_password != "" ? var.user_password : null
-    }
-
-    dns {
-      servers = var.dns_servers != "" ? var.dns_servers : null
+    content {
+      usb3    = false
+      mapping = proxmox_virtual_environment_hardware_mapping_usb.usb[0].name
     }
   }
+
+  dynamic "initialization" {
+    for_each = var.import_cloud_image_enabled ? [1] : []
+
+    content {
+      datastore_id = var.main_disk_datastore
+
+      ip_config {
+        ipv4 {
+          address = var.ip_address
+          gateway = var.gateway
+        }
+      }
+
+      user_account {
+        username = var.username
+        keys     = var.ssh_key
+        password = var.user_password != "" ? var.user_password : null
+      }
+
+      dns {
+        servers = var.dns_servers != "" ? var.dns_servers : null
+      }
+    }
+  }
+}
+
+resource "proxmox_virtual_environment_hardware_mapping_usb" "usb" {
+  count = var.usb_skyconnect_enabled ? 1 : 0
+
+  name = "skyconnect-usb-device"
+
+  map = [
+    {
+      comment = "SkyConnect USB Device"
+      id      = "10c4:ea60"
+      node    = var.node_name
+    },
+  ]
 }

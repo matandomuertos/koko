@@ -23,6 +23,8 @@ inputs = {
   memory_floating  = 24576
   ip_address       = "192.168.0.102/24"
 
+  usb_skyconnect_enabled = true
+
   main_disk_size    = 40
   main_disk_discard = "ignore"
 
