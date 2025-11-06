@@ -3,3 +3,4 @@
 - import_tasks: users.yml
 - import_tasks: ssh.yml
 - import_tasks: lvm.yml
+- import_tasks: hosts.yml

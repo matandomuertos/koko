@@ -8,7 +8,8 @@
     src: crontab
     dest: /root/crontab.tmp
     mode: '0644'
-  notify: Install root crontab
+  when: ansible_hostname == "koko"
 
 - name: Apply root crontab if updated
   shell: crontab /root/crontab.tmp -u root
+  when: ansible_hostname == "koko"

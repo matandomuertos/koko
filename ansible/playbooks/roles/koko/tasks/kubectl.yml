@@ -3,7 +3,11 @@
   uri:
     url: https://dl.k8s.io/release/stable.txt
     return_content: yes
+    timeout: 20
   register: kubectl_version
+  retries: 5
+  delay: 3
+  until: kubectl_version is succeeded
 
 - name: Download kubectl
   get_url:

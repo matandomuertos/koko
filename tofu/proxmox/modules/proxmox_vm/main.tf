@@ -89,6 +89,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
       }
 
       dns {
+        domain  = var.dns_domain != "" ? var.dns_domain : null
         servers = var.dns_servers != "" ? var.dns_servers : null
       }
     }

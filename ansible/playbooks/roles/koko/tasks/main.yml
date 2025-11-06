@@ -1,9 +1,9 @@
 - import_tasks: system.yml
+- import_tasks: zsh.yml
 - import_tasks: dirs.yml
 - import_tasks: docker.yml
 - import_tasks: k3d.yml
 - import_tasks: kubectl.yml
 - import_tasks: pip.yml
-- import_tasks: zsh.yml
 - import_tasks: tenv.yml
 # - import_tasks: reboot.yml

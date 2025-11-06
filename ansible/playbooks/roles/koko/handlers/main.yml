@@ -1,3 +1,0 @@
----
-- name: Install root crontab
-  shell: crontab /root/crontab.tmp -u root

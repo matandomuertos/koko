@@ -97,6 +97,12 @@ variable "dns_servers" {
   default     = ["1.1.1.1", "8.8.8.8"]
 }
 
+variable "dns_domain" {
+  description = "DNS domain for the VM"
+  type        = string
+  default     = "koko"
+}
+
 variable "username" {
   description = "Username for cloud-init"
   type        = string
