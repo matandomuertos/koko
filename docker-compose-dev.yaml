@@ -1,0 +1,97 @@
+volumes:
+  rancher-data:
+    driver: local
+
+networks:
+  test:
+    driver: bridge
+  rancher:
+    driver: bridge
+
+services:
+  ### APPS ###
+  rancher:
+    container_name: rancher
+    image: rancher/rancher:v2.12.3
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - rancher-data:/var/lib/rancher
+      - /bkp/docker/traefik/certs/rancher-cert.pem:/etc/rancher/ssl/cert.pem
+      - /bkp/docker/traefik/certs/rancher-key.pem:/etc/rancher/ssl/key.pem
+    command:
+      - "--no-cacerts"
+    networks:
+      - rancher
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rancher.rule=Host(`rancher.dev.${DOMAIN}`)"
+      - "traefik.http.services.rancher.loadbalancer.server.port=80"
+      - "traefik.http.routers.rancher.entrypoints=websecure"
+      - "traefik.http.routers.rancher.tls.certresolver=cloudflare"
+      - "traefik.http.routers.rancher.middlewares=rancher-whitelist"
+      - "traefik.http.middlewares.rancher-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  ### Networking ###
+
+  traefik:
+    image: traefik:3.3.5
+    container_name: traefik
+    restart: always
+    environment:
+      - CF_DNS_API_TOKEN=${TRAEFIK_CF_DNS_API_TOKEN}
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.delayBeforeCheck=0"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=${TRAEFIK_RESOLVERS}"
+      - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+        #- "--accesslog=true"
+        #- "--accesslog.filePath=/logs/access.log"
+        #- "--accesslog.filters.statuscodes=200,300-308,403,404"
+        #- "--accesslog.filters.retryattempts"
+        #- "--accesslog.filters.minduration=10ms"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /bkp/docker/traefik/certs:/certs
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    networks:
+      - rancher
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`) || Host(`tk.pub.${DOMAIN}`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.treafik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik.middlewares=traefik-whitelist"
+      - "traefik.http.middlewares.traefik-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  ### TEST ###
+  test:
+    image: nginxdemos/hello:latest
+    container_name: test
+    restart: unless-stopped
+    networks:
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`test.dev.${DOMAIN}`) || Host(`test.${DOMAIN}`)"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+      - "traefik.http.routers.test.entrypoints=websecure"
+      - "traefik.http.routers.test.tls.certresolver=cloudflare"
+      - "traefik.http.routers.test.middlewares=test-whitelist"
+      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
