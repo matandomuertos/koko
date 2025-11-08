@@ -12,7 +12,7 @@ locals {
 }
 
 inputs = {
-  name          = "k8s2-dev"
+  name          = "k8s3-dev"
   username      = local.secrets_vars.locals.vm_username
   user_password = local.secrets_vars.locals.vm_password
   ssh_key       = local.secrets_vars.locals.vm_ssh_key
