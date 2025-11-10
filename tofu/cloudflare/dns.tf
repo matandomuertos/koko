@@ -33,6 +33,15 @@ resource "cloudflare_dns_record" "all_private_dev" {
   proxied = false
 }
 
+resource "cloudflare_dns_record" "all_private_k8s" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "*.k8s"
+  ttl     = 1 #auto
+  type    = "A"
+  content = var.koko_k8s_ip
+  proxied = false
+}
+
 resource "cloudflare_dns_record" "proxmox" {
   zone_id = cloudflare_zone.wyppu.id
   name    = "proxmox"

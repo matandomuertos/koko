@@ -33,6 +33,12 @@ variable "koko_dev_ip" {
   default     = "192.168.0.104"
 }
 
+variable "koko_k8s_ip" {
+  type        = string
+  description = "The IP address for the Koko K8s service"
+  default     = "192.168.0.108"
+}
+
 variable "koko_pve1_ip" {
   type        = string
   description = "The IP address for the Koko PVE1 service"
