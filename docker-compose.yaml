@@ -55,7 +55,7 @@ services:
       - WEBUI_PORT=8081
     volumes:
       - /bkp/docker/qbittorrentconfig:/config
-      - /download/qbittorrent:/downloads
+      - /downloads/qbittorrent:/downloads
     networks:
       - qbittorrent
     labels:
