@@ -1,4 +1,6 @@
 ---
+user_name: nahuel
+
 base_apt_packages:
   - network-manager
   - nmon

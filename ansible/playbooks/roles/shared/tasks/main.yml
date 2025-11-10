@@ -1,4 +1,5 @@
 ---
 - import_tasks: zsh.yml
+- import_tasks: docker.yml
 - import_tasks: k3d.yml
 - import_tasks: kubectl.yml

@@ -1,26 +1,26 @@
 ---
-- name: Ensure user 'nahuel' exists
+- name: Ensure user '{{ user_name }}' exists
   user:
-    name: nahuel
-    comment: "Nahuel User"
-    password: "{{ nahuel_password | password_hash('sha512') }}"
+    name: "{{ user_name }}"
+    comment: "{{ user_name }} User"
+    password: "{{ user_password | password_hash('sha512') }}"
     shell: "{{ '/bin/zsh' if (group_names | intersect(['kokos', 'k3s'])) else '/bin/bash' }}"
     state: present
     create_home: yes
     groups: sudo
     append: yes
-  when: nahuel_password is defined
+  when: user_password is defined
 
-- name: Ensure .ssh exists for nahuel
+- name: Ensure .ssh exists for {{ user_name }}
   file:
-    path: /home/nahuel/.ssh
+    path: /home/{{ user_name }}/.ssh
     state: directory
-    owner: nahuel
-    group: nahuel
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
     mode: "0700"
 
-- name: Add SSH public key for 'nahuel'
+- name: Add SSH public key for '{{ user_name }}'
   authorized_key:
-    user: nahuel
+    user: "{{ user_name }}"
     state: present
-    key: "{{ lookup('file', 'files/nahuel.pub') }}"
+    key: "{{ lookup('file', user_name ~ '.pub') }}"
