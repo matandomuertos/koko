@@ -1,6 +1,6 @@
 ---
-vgs: []
-lvs: []
-
 apt_packages:
+  - hdparm
   - python3-pip
+  - zsh
+  - git

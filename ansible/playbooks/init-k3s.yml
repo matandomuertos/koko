@@ -1,7 +1,8 @@
 ---
-- hosts: pbs
+- hosts:
+    - k3s
   gather_facts: true
   become: true
   roles:
     - base
-    - proxmox
+    - shared

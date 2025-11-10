@@ -12,23 +12,20 @@ locals {
 }
 
 inputs = {
-  name          = "k8s-dev"
+  name          = "k3s1"
   username      = local.secrets_vars.locals.vm_username
   user_password = local.secrets_vars.locals.vm_password
   ssh_key       = local.secrets_vars.locals.vm_ssh_key
 
   node_name = local.env_vars.locals.node_name
 
-  cpu_cores        = 2
-  cpu_type         = "host"
-  memory_dedicated = 8192
-  memory_floating  = 12288
-  ip_address       = "192.168.0.105/24"
+  cpu_cores        = 4
+  memory_dedicated = 16384
+  memory_floating  = 24576
+  ip_address       = "192.168.0.108/24"
 
-  main_disk_datastore = "data2"
-  main_disk_size      = 40
-  main_disk_discard   = "ignore"
-  main_disk_backup    = false
+  main_disk_size    = 60
+  main_disk_discard = "ignore"
 
   tags = local.env_vars.locals.tags
 }

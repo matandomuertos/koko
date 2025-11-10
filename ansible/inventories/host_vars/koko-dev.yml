@@ -25,9 +25,3 @@ lvs:
     size: 10G
     mount: /bkp/docker/timemachine
     fstype: ext4
-
-apt_packages:
-  - hdparm
-  - python3-pip
-  - zsh
-  - git

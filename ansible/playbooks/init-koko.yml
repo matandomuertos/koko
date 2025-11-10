@@ -1,10 +1,9 @@
 ---
-- hosts: 
-    - koko
-    - koko-dev
-    - k8s
+- hosts:
+    - kokos
   gather_facts: true
   become: true
   roles:
-    - common
+    - base
     - koko
+    - shared

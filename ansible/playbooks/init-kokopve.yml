@@ -4,10 +4,10 @@
   become: true
   roles:
     - IronicBadger.proxmox_nag_removal
-    - common
+    - base
     - proxmox
 
-- hosts: 192.168.0.100
+- hosts: koko-pve1
   become: true
   roles:
     - pve1

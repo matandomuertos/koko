@@ -1,7 +1,7 @@
 ---
-- hosts: pbs
+- hosts:
+    - k8s
   gather_facts: true
   become: true
   roles:
     - base
-    - proxmox

@@ -4,7 +4,7 @@
     name: nahuel
     comment: "Nahuel User"
     password: "{{ nahuel_password | password_hash('sha512') }}"
-    shell: /bin/bash
+    shell: "{{ '/bin/zsh' if (group_names | intersect(['kokos', 'k3s'])) else '/bin/bash' }}"
     state: present
     create_home: yes
     groups: sudo
@@ -17,7 +17,7 @@
     state: directory
     owner: nahuel
     group: nahuel
-    mode: '0700'
+    mode: "0700"
 
 - name: Add SSH public key for 'nahuel'
   authorized_key:
