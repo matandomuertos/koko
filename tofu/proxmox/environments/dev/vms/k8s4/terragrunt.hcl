@@ -12,7 +12,7 @@ locals {
 }
 
 inputs = {
-  name          = "k8s3"
+  name          = "k8s4"
   username      = local.secrets_vars.locals.vm_username
   user_password = local.secrets_vars.locals.vm_password
   ssh_key       = local.secrets_vars.locals.vm_ssh_key
@@ -23,7 +23,7 @@ inputs = {
   cpu_type         = "host"
   memory_dedicated = 8192
   memory_floating  = 12288
-  ip_address       = "192.168.0.107/24"
+  ip_address       = "192.168.0.109/24"
 
   main_disk_datastore = "data"
   main_disk_size      = 40
