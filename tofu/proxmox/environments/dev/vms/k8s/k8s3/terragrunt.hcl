@@ -3,12 +3,12 @@ include "root" {
 }
 
 include "env" {
-  path = "${get_terragrunt_dir()}/../../../_env/vm.hcl"
+  path = "${get_terragrunt_dir()}/../../../../_env/vm.hcl"
 }
 
 locals {
   secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
-  env_vars     = read_terragrunt_config("../../env.hcl")
+  env_vars     = read_terragrunt_config("../../../env.hcl")
 }
 
 inputs = {
@@ -17,15 +17,14 @@ inputs = {
   user_password = local.secrets_vars.locals.vm_password
   ssh_key       = local.secrets_vars.locals.vm_ssh_key
 
-  node_name = "koko-pve1"
+  node_name = local.env_vars.locals.node_name
 
-  cpu_cores        = 2
-  cpu_type         = "host"
-  memory_dedicated = 8192
-  memory_floating  = 12288
-  ip_address       = "192.168.0.107/24"
+  cpu_cores        = 1
+  memory_dedicated = 4096
+  memory_floating  = 8192
+  ip_address       = "192.168.0.112/24"
 
-  main_disk_datastore = "data"
+  main_disk_datastore = "data2"
   main_disk_size      = 40
   main_disk_discard   = "ignore"
   main_disk_backup    = false
