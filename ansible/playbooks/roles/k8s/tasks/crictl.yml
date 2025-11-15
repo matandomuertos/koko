@@ -1,0 +1,39 @@
+---
+- name: Check if crictl is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/crictl
+  register: crictl_installed
+
+- name: Get crictl latest version
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/kubernetes-sigs/cri-tools/releases/latest
+    return_content: yes
+  register: crictl_release
+  when: not crictl_installed.stat.exists
+
+- name: Set crictl version
+  ansible.builtin.set_fact:
+    crictl_version: "{{ crictl_release.json.tag_name }}"
+  when: not crictl_installed.stat.exists
+
+- name: Download and install crictl
+  ansible.builtin.shell: |
+    curl -L "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/crictl-{{ crictl_version }}-linux-amd64.tar.gz" | tar -C /usr/local/bin -xz
+  args:
+    creates: /usr/local/bin/crictl
+  when: not crictl_installed.stat.exists
+
+- name: Verify crictl installation
+  ansible.builtin.command: crictl --version
+  register: crictl_version_output
+  changed_when: false
+
+- name: Display crictl version
+  ansible.builtin.debug:
+    msg: "crictl version: {{ crictl_version_output.stdout }}"
+
+- name: Set CRI_CONFIG_FILE environment variable for root
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: 'export CRI_CONFIG_FILE=/var/lib/rancher/rke2/agent/etc/crictl.yaml'
+    create: yes
