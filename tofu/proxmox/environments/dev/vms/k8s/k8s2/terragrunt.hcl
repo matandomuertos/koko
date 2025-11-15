@@ -19,7 +19,7 @@ inputs = {
 
   node_name = "koko-pve1"
 
-  cpu_cores        = 1
+  cpu_cores        = 2
   memory_dedicated = 4096
   memory_floating  = 8192
   ip_address       = "192.168.0.111/24"

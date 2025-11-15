@@ -19,7 +19,7 @@ inputs = {
 
   node_name = local.env_vars.locals.node_name
 
-  cpu_cores        = 1
+  cpu_cores        = 2
   memory_dedicated = 4096
   memory_floating  = 8192
   ip_address       = "192.168.0.112/24"
