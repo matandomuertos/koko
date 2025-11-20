@@ -13,6 +13,8 @@ resource "proxmox_virtual_environment_vm" "vm" {
   tags            = var.tags
   description     = var.description
 
+  started = var.started
+
   agent {
     enabled = var.qemu_agent
     timeout = var.qemu_agent_timeout

@@ -19,6 +19,8 @@ inputs = {
 
   node_name = "koko-pve1"
 
+  started = false
+
   cpu_cores        = 2
   memory_dedicated = 4096
   memory_floating  = 8192

@@ -15,6 +15,12 @@ variable "vm_id" {
   default     = null
 }
 
+variable "started" {
+  description = "Whether the VM should be started after creation"
+  type        = bool
+  default     = true
+}
+
 variable "os_type" {
   description = "Operating System type"
   type        = string
@@ -89,6 +95,7 @@ variable "gateway" {
 variable "ip_address" {
   description = "Static IPv4 address for cloud-init"
   type        = string
+  default     = null
 }
 
 variable "dns_servers" {

@@ -19,6 +19,8 @@ inputs = {
 
   node_name = local.env_vars.locals.node_name
 
+  started = false
+
   cpu_cores        = 2
   memory_dedicated = 4096
   memory_floating  = 8192
