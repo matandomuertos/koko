@@ -19,7 +19,7 @@ inputs = {
 
   node_name = local.env_vars.locals.node_name
 
-  cpu_cores        = 2
+  cpu_cores        = 1
   cpu_type         = "host"
   memory_dedicated = 8192
   memory_floating  = 12288
