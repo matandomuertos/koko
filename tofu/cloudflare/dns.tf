@@ -33,12 +33,12 @@ resource "cloudflare_dns_record" "all_private_dev" {
   proxied = false
 }
 
-resource "cloudflare_dns_record" "all_private_k3s" {
+resource "cloudflare_dns_record" "all_private_k3d" {
   zone_id = cloudflare_zone.wyppu.id
-  name    = "*.k3s"
+  name    = "*.k3d"
   ttl     = 1 #auto
   type    = "A"
-  content = var.koko_k3s_ip
+  content = var.koko_k3d_ip
   proxied = false
 }
 

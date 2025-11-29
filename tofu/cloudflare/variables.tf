@@ -33,9 +33,9 @@ variable "koko_dev_ip" {
   default     = "192.168.0.104"
 }
 
-variable "koko_k3s_ip" {
+variable "koko_k3d_ip" {
   type        = string
-  description = "The IP address for the K3s LB"
+  description = "The IP address for the K3d LB"
   default     = "192.168.0.108"
 }
 
