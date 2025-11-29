@@ -17,16 +17,16 @@ inputs = {
   user_password = local.secrets_vars.locals.vm_password
   ssh_key       = local.secrets_vars.locals.vm_ssh_key
 
-  node_name = local.env_vars.locals.node_name
+  node_name = "koko-pve1"
 
   # started = false
 
   cpu_cores        = 2
   memory_dedicated = 8192
   memory_floating  = 16384
-  ip_address       = "192.168.0.120/24"
+  ip_address       = "192.168.0.121/24"
 
-  main_disk_datastore = "data2"
+  main_disk_datastore = "data"
   main_disk_size      = 20
   main_disk_discard   = "ignore"
   main_disk_backup    = false

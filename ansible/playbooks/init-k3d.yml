@@ -1,8 +1,8 @@
 ---
 - hosts:
-    - k8s
+    - k3d
   gather_facts: true
   become: true
   roles:
     - base
-    - k8s
+    - shared

@@ -3,4 +3,4 @@ vgs: []
 lvs: []
 
 apt_packages:
-  - python3-pip
+  - zsh

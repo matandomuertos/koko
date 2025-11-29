@@ -3,12 +3,12 @@ include "root" {
 }
 
 include "env" {
-  path = "${get_terragrunt_dir()}/../../../_env/vm.hcl"
+  path = "${get_terragrunt_dir()}/../../../../_env/vm.hcl"
 }
 
 locals {
   secrets_vars = read_terragrunt_config("/bkp/tofu/proxmox/tg.hcl")
-  env_vars     = read_terragrunt_config("../../env.hcl")
+  env_vars     = read_terragrunt_config("../../../env.hcl")
 }
 
 inputs = {
@@ -19,13 +19,17 @@ inputs = {
 
   node_name = local.env_vars.locals.node_name
 
-  cpu_cores        = 4
-  memory_dedicated = 16384
-  memory_floating  = 24576
-  ip_address       = "192.168.0.108/24"
+  # started = false
 
-  main_disk_size    = 60
-  main_disk_discard = "ignore"
+  cpu_cores        = 2
+  memory_dedicated = 8192
+  memory_floating  = 16384
+  ip_address       = "192.168.0.120/24"
+
+  main_disk_datastore = "data2"
+  main_disk_size      = 20
+  main_disk_discard   = "ignore"
+  main_disk_backup    = false
 
   tags = local.env_vars.locals.tags
 }

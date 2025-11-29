@@ -4,11 +4,12 @@
     name: "{{ user_name }}"
     comment: "{{ user_name }} User"
     password: "{{ user_password | password_hash('sha512') }}"
-    shell: "{{ '/bin/zsh' if (group_names | intersect(['kokos', 'k3s'])) else '/bin/bash' }}"
+    shell: "{{ '/bin/zsh' if (group_names | intersect(['kokos', 'k3d'])) else '/bin/bash' }}"
     state: present
     create_home: yes
     groups: sudo
     append: yes
+    update_password: on_create
   when: user_password is defined
 
 - name: Ensure .ssh exists for {{ user_name }}
@@ -18,6 +19,7 @@
     owner: "{{ user_name }}"
     group: "{{ user_name }}"
     mode: "0700"
+  when: user_password is defined
 
 - name: Add SSH public key for '{{ user_name }}'
   authorized_key:
