@@ -45,6 +45,7 @@ networks:
 services:
   ### APPS ###
   qbittorrent:
+    profiles: [prod, dev]
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     restart: unless-stopped
@@ -68,6 +69,7 @@ services:
       - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   plex:
+    profiles: [prod]
     image: plexinc/pms-docker:latest
     container_name: plex
     restart: unless-stopped
@@ -87,6 +89,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"
 
   gitea:
+    profiles: [prod, dev]
     image: gitea/gitea:latest
     container_name: gitea
     restart: unless-stopped
@@ -109,6 +112,7 @@ services:
       - "traefik.http.middlewares.gitea-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   uptime-kuma:
+    profiles: [prod, dev]
     image: louislam/uptime-kuma:latest
     container_name: uptime-kuma
     restart: unless-stopped
@@ -126,6 +130,7 @@ services:
       - "traefik.http.middlewares.uptime-kuma-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   koko-web:
+    profiles: [prod, dev]
     image: matandomuertos/koko-dashboard-web:latest
     container_name: koko-web
     restart: unless-stopped
@@ -145,6 +150,7 @@ services:
       - "traefik.http.middlewares.dashboard-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   koko-api:
+    profiles: [prod, dev]
     image: matandomuertos/koko-dashboard-api:latest
     container_name: koko-api
     restart: unless-stopped
@@ -154,6 +160,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   vaultwarden:
+    profiles: [prod]
     image: vaultwarden/server:1.33.2-alpine
     container_name: vaultwarden
     restart: unless-stopped
@@ -174,6 +181,7 @@ services:
       - "traefik.http.middlewares.vaultwarden-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   portainer:
+    profiles: [prod, dev]
     image: portainer/portainer-ce:lts
     container_name: portainer
     restart: unless-stopped
@@ -201,6 +209,7 @@ services:
       - "traefik.http.middlewares.edge-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   homeassistant:
+    profiles: [prod]
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
@@ -223,6 +232,7 @@ services:
       - "traefik.http.routers.homeassistant.tls.certresolver=cloudflare"
 
   timemachine:
+    profiles: [prod]
     container_name: timemachine
     image: mbentley/timemachine:smb
     restart: unless-stopped
@@ -245,6 +255,7 @@ services:
         hard: 65536
 
   rclone-mount:
+    profiles: [prod]
     container_name: rclone-mount
     image: mumiehub/rclone-mount:v1.69.1
     restart: unless-stopped
@@ -263,6 +274,7 @@ services:
       - "ConfigName=rclone.conf"
 
   your-spotify-mongo-mongo:
+    profiles: [prod]
     image: mongo:6
     container_name: your-spotify-mongo
     restart: unless-stopped
@@ -272,6 +284,7 @@ services:
       - /bkp/docker/your-spotify-mongo:/data/db
 
   your-spotify:
+    profiles: [prod]
     image: lscr.io/linuxserver/your_spotify:latest
     container_name: your-spotify
     restart: unless-stopped
@@ -300,6 +313,7 @@ services:
   ### Networking ###
 
   traefik:
+    profiles: [prod, dev]
     image: traefik:3.6.1
     container_name: traefik
     restart: always
@@ -360,6 +374,7 @@ services:
   ### Monitoring ###
 
   prometheus:
+    profiles: [prod]
     image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
@@ -383,6 +398,7 @@ services:
       - "traefik.http.middlewares.prometheus-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   alertmanager:
+    profiles: [prod]
     image: prom/alertmanager:latest
     container_name: alertmanager
     restart: unless-stopped
@@ -402,6 +418,7 @@ services:
       - "traefik.http.middlewares.alertmanager-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   grafana:
+    profiles: [prod]
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
@@ -425,6 +442,7 @@ services:
       - "traefik.http.middlewares.grafana-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   node-exporter:
+    profiles: [prod]
     image: prom/node-exporter:latest
     container_name: node-exporter
     restart: unless-stopped
@@ -441,6 +459,7 @@ services:
       - monitoring
 
   cadvisor:
+    profiles: [prod]
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     restart: unless-stopped
@@ -455,6 +474,7 @@ services:
       - monitoring
 
   qbittorrent-exporter:
+    profiles: [prod]
     image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
     container_name: qbittorrent-exporter
     restart: unless-stopped
@@ -468,6 +488,7 @@ services:
       - qbittorrent
 
   proxmox-exporter:
+    profiles: [prod]
     image: prompve/prometheus-pve-exporter:latest
     container_name: proxmox-exporter
     restart: unless-stopped
@@ -477,6 +498,7 @@ services:
       - monitoring
 
   iperf3: # To use it, from client, run: `iperf3 -c koko`
+    profiles: [prod]
     image: networkstatic/iperf3:latest
     container_name: iperf3
     restart: unless-stopped
@@ -488,6 +510,7 @@ services:
 
   ### AI ####
   ollama:
+    profiles: [prod]
     image: ollama/ollama:latest
     container_name: ollama
     restart: unless-stopped
@@ -505,6 +528,7 @@ services:
       - "traefik.http.middlewares.ollama-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   openwebui:
+    profiles: [prod]
     image: ghcr.io/open-webui/open-webui:latest
     container_name: open-webui
     restart: unless-stopped
@@ -526,6 +550,7 @@ services:
 
   ### TEST ###
   test:
+    profiles: [prod, dev]
     image: nginxdemos/hello:latest
     container_name: test
     restart: unless-stopped
@@ -541,6 +566,7 @@ services:
       - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   n8n:
+    profiles: [prod]
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
