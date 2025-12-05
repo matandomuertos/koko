@@ -1,41 +1,18 @@
 volumes:
-  rancher-data:
+  test:
     driver: local
 
 networks:
   test:
     driver: bridge
-  rancher:
-    driver: bridge
 
 services:
   ### APPS ###
-  rancher:
-    container_name: rancher
-    image: rancher/rancher:v2.12.3
-    restart: unless-stopped
-    privileged: true
-    volumes:
-      - rancher-data:/var/lib/rancher
-      - /bkp/docker/traefik/certs/rancher-cert.pem:/etc/rancher/ssl/cert.pem
-      - /bkp/docker/traefik/certs/rancher-key.pem:/etc/rancher/ssl/key.pem
-    command:
-      - "--no-cacerts"
-    networks:
-      - rancher
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rancher.rule=Host(`rancher.dev.${DOMAIN}`)"
-      - "traefik.http.services.rancher.loadbalancer.server.port=80"
-      - "traefik.http.routers.rancher.entrypoints=websecure"
-      - "traefik.http.routers.rancher.tls.certresolver=cloudflare"
-      - "traefik.http.routers.rancher.middlewares=rancher-whitelist"
-      - "traefik.http.middlewares.rancher-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   ### Networking ###
 
   traefik:
-    image: traefik:3.3.5
+    image: traefik:3.6.1
     container_name: traefik
     restart: always
     environment:
@@ -69,7 +46,6 @@ services:
       - "443:443"
       - "8080:8080"
     networks:
-      - rancher
       - test
     labels:
       - "traefik.enable=true"
