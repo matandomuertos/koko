@@ -61,7 +61,7 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 
 ### Post-reboot instructions
 - To enable the SkyConnect usb run `sudo modprobe cp210x` in the VM
-- With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `ln -s /bkp/docker/envs .env && docker compose up -d` to run all the apps.
+- With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `ln -s /bkp/docker/envs .env && docker compose --profile prod up -d` to run all the apps.
 
 ## Docker
 ### Apps running

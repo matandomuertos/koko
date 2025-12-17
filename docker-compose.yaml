@@ -548,28 +548,13 @@ services:
       - "traefik.http.routers.openwebui.middlewares=openwebui-whitelist"
       - "traefik.http.middlewares.openwebui-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-  ### TEST ###
-  test:
-    profiles: [prod, dev]
-    image: nginxdemos/hello:latest
-    container_name: test
-    restart: unless-stopped
-    networks:
-      - test
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
-      - "traefik.http.services.test.loadbalancer.server.port=80"
-      - "traefik.http.routers.test.entrypoints=websecure"
-      - "traefik.http.routers.test.tls.certresolver=cloudflare"
-      - "traefik.http.routers.test.middlewares=test-whitelist"
-      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-
   n8n:
     profiles: [prod]
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
+    volumes:
+      - /bkp/docker/n8n:/home/node/.n8n
     networks:
       - n8n
     labels:
@@ -588,9 +573,25 @@ services:
       - NODE_ENV=production
       - WEBHOOK_URL=https://n8.${DOMAIN}/
       - GENERIC_TIMEZONE=Europe/Warsaw
-    volumes:
-      - n8n_data:/home/node/.n8n
 
+  ### TEST ###
+  test:
+    profiles: [prod, dev]
+    image: nginxdemos/hello:latest
+    container_name: test
+    restart: unless-stopped
+    networks:
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+      - "traefik.http.routers.test.entrypoints=websecure"
+      - "traefik.http.routers.test.tls.certresolver=cloudflare"
+      - "traefik.http.routers.test.middlewares=test-whitelist"
+      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  ###################################################################
   ### OLD SERVICES ###
   # cftunnel:
   #   image: cloudflare/cloudflared:2023.5.1
