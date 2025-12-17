@@ -591,6 +591,26 @@ services:
       - "traefik.http.routers.test.middlewares=test-whitelist"
       - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
+  varnish:
+    profiles: [prod]
+    image: varnish:latest
+    container_name: varnish
+    restart: unless-stopped
+    networks:
+      - test
+      - koko-dashboard-ui
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cache.rule=Host(`cache.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+      - "traefik.http.services.cache.loadbalancer.server.port=80"
+      - "traefik.http.routers.cache.entrypoints=websecure"
+      - "traefik.http.routers.cache.tls.certresolver=cloudflare"
+      - "traefik.http.routers.cache.middlewares=cache-whitelist"
+      - "traefik.http.middlewares.cache-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+    environment:
+      - VARNISH_BACKEND_HOST=koko-web
+      - VARNISH_BACKEND_PORT=80
+
   ###################################################################
   ### OLD SERVICES ###
   # cftunnel:
