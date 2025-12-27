@@ -12,22 +12,11 @@ services:
       - PROMETHEUS_MCP_BIND_HOST=0.0.0.0
     restart: always
 
-  notion:
-    image: mcp/notion:latest
-    container_name: mcp-notion
-    ports:
-      - "8002:8080"
-    environment:
-      - NOTION_TOKEN=${NOTION_TOKEN}
-      - TRANSPORT_MODE=streamable-http
-      - TRANSPORT_HOST=0.0.0.0
-    restart: always
-
   terraform:
     image: hashicorp/terraform-mcp-server:latest
     container_name: mcp-terraform
     ports:
-      - "8004:8080"
+      - "8002:8080"
     environment:
       - TRANSPORT_MODE=streamable-http
       - TRANSPORT_HOST=0.0.0.0
@@ -37,9 +26,20 @@ services:
     image: ghcr.io/korotovsky/slack-mcp-server
     container_name: mcp-slack
     ports:
-      - "8005:8080"
+      - "8003:13080"
     environment:
-      - SLACK_MCP_XOXP_TOKEN=${SLACK_XOXP_TOKEN}
+      - SLACK_MCP_XOXB_TOKEN=${SLACK_XOXB_TOKEN}
       - SLACK_MCP_ADD_MESSAGE_TOOL=true
       - TRANSPORT=sse
+      - SLACK_MCP_HOST=0.0.0.0
+    restart: always
+
+  grafana:
+    image: grafana/mcp-grafana:latest
+    container_name: mcp-grafana
+    ports:
+      - "8004:8000"
+    environment:
+      - GRAFANA_URL=${GRAFANA_URL}
+      - GRAFANA_SERVICE_ACCOUNT_TOKEN=${GRAFANA_SERVICE_ACCOUNT_TOKEN}
     restart: always
