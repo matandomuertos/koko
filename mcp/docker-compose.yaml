@@ -1,0 +1,45 @@
+name: mcp
+services:
+  prometheus:
+    image: ghcr.io/pab1it0/prometheus-mcp-server
+    container_name: mcp-prometheus
+    ports:
+      - "8001:8080"
+    environment:
+      - PROMETHEUS_URL=${PROMETHEUS_URL}
+      - PROMETHEUS_MCP_SERVER_TRANSPORT=sse
+      - PROMETHEUS_MCP_BIND_PORT=8080
+      - PROMETHEUS_MCP_BIND_HOST=0.0.0.0
+    restart: always
+
+  notion:
+    image: mcp/notion:latest
+    container_name: mcp-notion
+    ports:
+      - "8002:8080"
+    environment:
+      - NOTION_TOKEN=${NOTION_TOKEN}
+      - TRANSPORT_MODE=streamable-http
+      - TRANSPORT_HOST=0.0.0.0
+    restart: always
+
+  terraform:
+    image: hashicorp/terraform-mcp-server:latest
+    container_name: mcp-terraform
+    ports:
+      - "8004:8080"
+    environment:
+      - TRANSPORT_MODE=streamable-http
+      - TRANSPORT_HOST=0.0.0.0
+    restart: always
+
+  slack:
+    image: ghcr.io/korotovsky/slack-mcp-server
+    container_name: mcp-slack
+    ports:
+      - "8005:8080"
+    environment:
+      - SLACK_MCP_XOXP_TOKEN=${SLACK_XOXP_TOKEN}
+      - SLACK_MCP_ADD_MESSAGE_TOOL=true
+      - TRANSPORT=sse
+    restart: always

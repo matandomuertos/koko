@@ -6,8 +6,3 @@
     - IronicBadger.proxmox_nag_removal
     - base
     - proxmox
-
-- hosts: koko-pve1
-  become: true
-  roles:
-    - pve1

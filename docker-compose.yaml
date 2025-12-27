@@ -1,3 +1,4 @@
+name: apps
 volumes:
   transcode_plex:
     driver: local
@@ -40,6 +41,8 @@ networks:
   n8n:
     driver: bridge
   your-spotify:
+    driver: bridge
+  varnish:
     driver: bridge
 
 services:
@@ -362,6 +365,7 @@ services:
       - portainer
       - n8n
       - your-spotify
+      - varnish
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`) || Host(`tk.pub.${DOMAIN}`)"
@@ -597,7 +601,7 @@ services:
     container_name: varnish
     restart: unless-stopped
     networks:
-      - test
+      - varnish
       - koko-dashboard-ui
     labels:
       - "traefik.enable=true"
@@ -611,6 +615,25 @@ services:
       - /var/lib/varnish/varnishd:exec
     volumes:
       - /bkp/docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
+    command: >
+      varnishd
+      -F
+      -a :80
+      -T :6082
+      -f /etc/varnish/default.vcl
+      -s malloc,512m
+
+  varnish-exporter:
+    image: varnish-exporter:local
+    container_name: varnish-exporter
+    depends_on:
+      - varnish
+    networks:
+      - monitoring
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - "-docker-container-name=varnish"
 
   ###################################################################
   ### OLD SERVICES ###

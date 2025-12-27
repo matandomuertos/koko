@@ -1,2 +1,3 @@
 ---
+- import_tasks: disable-tso.yml
 - import_tasks: exporters.yml
