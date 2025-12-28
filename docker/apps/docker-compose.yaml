@@ -1,3 +1,5 @@
+## docker compose --profile prod --env-file /bkp/docker/envs -f ~/koko/docker/apps/docker-compose.yaml up -d
+
 name: apps
 volumes:
   transcode_plex:
@@ -341,6 +343,22 @@ services:
       -f /etc/varnish/default.vcl
       -s malloc,512m
 
+  test:
+    profiles: [prod, dev]
+    image: nginxdemos/hello:latest
+    container_name: test
+    restart: unless-stopped
+    networks:
+      - test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+      - "traefik.http.routers.test.entrypoints=websecure"
+      - "traefik.http.routers.test.tls.certresolver=cloudflare"
+      - "traefik.http.routers.test.middlewares=test-whitelist"
+      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
   ### Networking ###
 
   traefik:
@@ -402,6 +420,18 @@ services:
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik.middlewares=traefik-whitelist"
       - "traefik.http.middlewares.traefik-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  # To use it, from client, run: `iperf3 -c koko`
+  iperf3:
+    profiles: [prod]
+    image: networkstatic/iperf3:latest
+    container_name: iperf3
+    restart: unless-stopped
+    networks:
+      - iperf3
+    command: -s
+    ports:
+      - "5201:5201"
 
   ### Monitoring ###
 
@@ -473,6 +503,8 @@ services:
       - "traefik.http.routers.grafana.middlewares=grafana-whitelist"
       - "traefik.http.middlewares.grafana-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
+  ### Exporters ###
+
   node-exporter:
     profiles: [prod]
     image: prom/node-exporter:latest
@@ -542,17 +574,6 @@ services:
     command:
       - "-docker-container-name=varnish"
 
-  iperf3: # To use it, from client, run: `iperf3 -c koko`
-    profiles: [prod]
-    image: networkstatic/iperf3:latest
-    container_name: iperf3
-    restart: unless-stopped
-    networks:
-      - iperf3
-    command: -s
-    ports:
-      - "5201:5201"
-
   ### AI ####
   ollama:
     profiles: [prod]
@@ -618,23 +639,6 @@ services:
       - NODE_ENV=production
       - WEBHOOK_URL=https://n8.${DOMAIN}/
       - GENERIC_TIMEZONE=Europe/Warsaw
-
-  ### TEST ###
-  test:
-    profiles: [prod, dev]
-    image: nginxdemos/hello:latest
-    container_name: test
-    restart: unless-stopped
-    networks:
-      - test
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
-      - "traefik.http.services.test.loadbalancer.server.port=80"
-      - "traefik.http.routers.test.entrypoints=websecure"
-      - "traefik.http.routers.test.tls.certresolver=cloudflare"
-      - "traefik.http.routers.test.middlewares=test-whitelist"
-      - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   ###################################################################
   ### OLD SERVICES ###

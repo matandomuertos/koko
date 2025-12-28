@@ -1,6 +1,9 @@
+## docker compose --profile prod --env-file /bkp/docker/envs-mcp -f ~/koko/docker/mcp/docker-compose.yaml up -d
+
 name: mcp
 services:
   prometheus:
+    profiles: [prod]
     image: ghcr.io/pab1it0/prometheus-mcp-server
     container_name: mcp-prometheus
     ports:
@@ -13,6 +16,7 @@ services:
     restart: always
 
   terraform:
+    profiles: [prod]
     image: hashicorp/terraform-mcp-server:latest
     container_name: mcp-terraform
     ports:
@@ -23,6 +27,7 @@ services:
     restart: always
 
   slack:
+    profiles: [prod]
     image: ghcr.io/korotovsky/slack-mcp-server
     container_name: mcp-slack
     ports:
@@ -35,6 +40,7 @@ services:
     restart: always
 
   grafana:
+    profiles: [prod]
     image: grafana/mcp-grafana:latest
     container_name: mcp-grafana
     ports:

@@ -61,10 +61,12 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 
 ### Post-reboot instructions
 - To enable the SkyConnect usb run `sudo modprobe cp210x` in the VM
-- With the user `nahuel`, go to the directory `koko` (`git clone https://github.com/matandomuertos/koko.git`) and run `ln -s /bkp/docker/envs .env && docker compose --profile prod up -d` to run all the apps.
+- With the user `nahuel`, clone koko's repo (`git clone https://github.com/matandomuertos/koko.git`) and run `docker compose --profile prod --env-file /bkp/docker/envs -f ~/koko/docker/apps/docker-compose.yaml up -d` to run all the apps.
+- To run all MCP servers run `docker compose --profile prod --env-file /bkp/docker/envs-mcp -f ~/koko/docker/mcp/docker-compose.yaml up -d`
 
 ## Docker
 ### Apps running
+#### Apps
 - [qBitorrent](https://hub.docker.com/r/linuxserver/qbittorrent)
 - [Plex](https://hub.docker.com/r/linuxserver/plex)
 - [Gitea](https://hub.docker.com/r/gitea/gitea)
@@ -75,24 +77,44 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 - [Home Assistant](https://github.com/home-assistant)
 - [Timemachine](https://hub.docker.com/r/mbentley/timemachine)
 - [Rclone-mount](https://hub.docker.com/r/mumiehub/rclone-mount)
+- [your-spotify](https://github.com/Yooooomi/your_spotify)
+- [Varnish Cache](https://hub.docker.com/_/varnish)
+- [NGINX Test web server](https://hub.docker.com/r/nginxdemos/hello/)
+
+#### Networking
 - [Traefik](https://github.com/traefik/traefik)
-- [Prometheus Stack](https://prometheus.io/)
-- [cAdvisor](https://github.com/google/cadvisor)
 - [iPerf3](https://github.com/nerdalert/iperf3)
+
+#### Monitoring
+- [Prometheus Stack (Prom, Alertmanager, Grafana)](https://prometheus.io/)
+- [cAdvisor](https://github.com/google/cadvisor)
+
+#### Exporters
+- [node-exporter](https://github.com/prometheus/node_exporter)
+- [cadvisor](https://github.com/google/cadvisor)
+- [qbittorrent-exporter](https://github.com/esanchezm/prometheus-qbittorrent-exporter)
+- [proxmox-exporter](https://github.com/prometheus-pve/prometheus-pve-exporter)
+- [varnish-exporter](https://github.com/jonnenauha/prometheus_varnish_exporter)
+
+#### AI
 - [Ollama](https://github.com/ollama/ollama)
 - [Open WebUI](https://github.com/open-webui/open-webui)
 - [n8n](https://github.com/n8n-io/n8n)
 
-### Apps Test
-- [NGINX Test web server](https://hub.docker.com/r/nginxdemos/hello/)
-
-### Apps abandoned
+#### Apps tested but abandoned
 - [Pi-hole](https://github.com/pi-hole/docker-pi-hole) - Not using it
 - [cftunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) - Not using it
 - [qBitorrent VPN](https://github.com/binhex/arch-qbittorrentvpn) - Moved back to standard qBitorrent
 - [Watchover](https://github.com/containrrr/watchtower) - Quite overkill, the crontab works good enough
 - [homer](https://github.com/bastienwirtz/homer) - Still prefer my custom dashboard
 - [homarr](https://github.com/ajnart/homarr) - Still prefer my custom dashboard
+- [cronmaster](https://github.com/fccview/cronmaster) - Web UI too heavy
+
+### MCP Servers running
+- [Prometheus](https://github.com/modelcontextprotocol/servers/tree/main/src/prometheus)
+- [Terraform](https://github.com/modelcontextprotocol/servers/tree/main/src/terraform)
+- [Slack](https://github.com/modelcontextprotocol/servers/tree/main/src/slack)
+- [Grafana](https://github.com/grafana/mcp-grafana)
 
 ## PBS
 - Installed from the ISO manually.
@@ -104,12 +126,9 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 
 ## Known issues
 - Traefik takes a while to validate all the certs and, sometimes, it leaves unneeded entries in the Godaddy DNS config
-- Plex is not actually using TLS, it seems it doesn't like reverse proxies and I was lazy to go deeper to fix it
+- Plex is not using TLS, it seems it doesn't like reverse proxies and I was lazy to go deeper to fix it
 - Homeassistant is not running behind Traefik because autodiscovery (mostly apple devices) needs `network_mode: host` and port `8123` to work
 
 ## What's next
 There are a few more apps that could be tested and added to the init script:
-- Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma) -> Prom and Grafana already running
-- [FileBroswer](https://github.com/filebrowser/filebrowser)
-- [Kasm](https://www.kasmweb.com/docs/latest/index.html)
-- Backup docker FS and all secrets somewhere out of the server (Cloudflare R2?)
+- Prometheus/Grafana/Loki (right now the monitoring tool is uptime-kuma)
