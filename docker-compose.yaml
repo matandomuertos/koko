@@ -313,6 +313,34 @@ services:
       - "traefik.http.routers.spotify.middlewares=spotify-whitelist"
       - "traefik.http.middlewares.spotify-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
+  varnish:
+    profiles: [prod]
+    image: varnish:latest
+    container_name: varnish
+    restart: unless-stopped
+    networks:
+      - varnish
+      - koko-dashboard-ui
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cache.rule=Host(`cache.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+      - "traefik.http.services.cache.loadbalancer.server.port=80"
+      - "traefik.http.routers.cache.entrypoints=websecure"
+      - "traefik.http.routers.cache.tls.certresolver=cloudflare"
+      - "traefik.http.routers.cache.middlewares=cache-whitelist"
+      - "traefik.http.middlewares.cache-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+    tmpfs:
+      - /var/lib/varnish/varnishd:exec
+    volumes:
+      - /bkp/docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
+    command: >
+      varnishd
+      -F
+      -a :80
+      -T :6082
+      -f /etc/varnish/default.vcl
+      -s malloc,512m
+
   ### Networking ###
 
   traefik:
@@ -501,6 +529,19 @@ services:
     networks:
       - monitoring
 
+  varnish-exporter:
+    profiles: [prod]
+    image: varnish-exporter:local
+    container_name: varnish-exporter
+    depends_on:
+      - varnish
+    networks:
+      - monitoring
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - "-docker-container-name=varnish"
+
   iperf3: # To use it, from client, run: `iperf3 -c koko`
     profiles: [prod]
     image: networkstatic/iperf3:latest
@@ -594,46 +635,6 @@ services:
       - "traefik.http.routers.test.tls.certresolver=cloudflare"
       - "traefik.http.routers.test.middlewares=test-whitelist"
       - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-
-  varnish:
-    profiles: [prod]
-    image: varnish:latest
-    container_name: varnish
-    restart: unless-stopped
-    networks:
-      - varnish
-      - koko-dashboard-ui
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cache.rule=Host(`cache.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
-      - "traefik.http.services.cache.loadbalancer.server.port=80"
-      - "traefik.http.routers.cache.entrypoints=websecure"
-      - "traefik.http.routers.cache.tls.certresolver=cloudflare"
-      - "traefik.http.routers.cache.middlewares=cache-whitelist"
-      - "traefik.http.middlewares.cache-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-    tmpfs:
-      - /var/lib/varnish/varnishd:exec
-    volumes:
-      - /bkp/docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
-    command: >
-      varnishd
-      -F
-      -a :80
-      -T :6082
-      -f /etc/varnish/default.vcl
-      -s malloc,512m
-
-  varnish-exporter:
-    image: varnish-exporter:local
-    container_name: varnish-exporter
-    depends_on:
-      - varnish
-    networks:
-      - monitoring
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command:
-      - "-docker-container-name=varnish"
 
   ###################################################################
   ### OLD SERVICES ###
