@@ -94,7 +94,7 @@ $ ansible-playbook playbooks/init-koko.yml -i inventories/hosts.yml --ask-become
 - [cadvisor](https://github.com/google/cadvisor)
 - [qbittorrent-exporter](https://github.com/esanchezm/prometheus-qbittorrent-exporter)
 - [proxmox-exporter](https://github.com/prometheus-pve/prometheus-pve-exporter)
-- [varnish-exporter](https://github.com/jonnenauha/prometheus_varnish_exporter)
+- [varnish-exporter](https://github.com/jonnenauha/prometheus_varnish_exporter) (Built manually)
 
 #### AI
 - [Ollama](https://github.com/ollama/ollama)

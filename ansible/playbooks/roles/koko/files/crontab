@@ -1,11 +1,12 @@
-#*/10 * * * * /bkp/fixPrivilegesMovies.sh
 0 * * * * rsync -avx --exclude 'timemachine' /bkp/docker /bkp/auth /bkp-ssd/ --delete
-# 0 3 * * * rsync -avx /bkp /usb/apollo/ --delete
 0 4 * * * rsync -avx /rclone/gdrive /bkp --delete
 */10 * * * * docker run --rm --name subliminal -v /bkp/docker/sublime:/config -v /downloads/qbittorrent:/downloads/qbittorrent -v subliminal_cache:/usr/src/cache -it ghcr.io/diaoul/subliminal -c /config/config.toml download /downloads/qbittorrent
-0 5 * * 0 cd ~nahuel/koko && docker compose --profile prod pull && docker compose --profile prod up -d --force-recreate qbittorrent plex gitea uptime-kuma portainer homeassistant timemachine your-spotify prometheus alertmanager grafana node-exporter cadvisor smartctl-exporter qbittorrent-exporter iperf3 ollama openwebui test n8n && docker system prune -a -f
+0 5 * * 0 docker compose --profile prod --env-file /bkp/docker/envs -f ~/koko/docker/apps/docker-compose.yaml pull && docker compose --profile prod --env-file /bkp/docker/envs -f ~/koko/docker/apps/docker-compose.yaml up -d --force-recreate qbittorrent plex gitea uptime-kuma portainer homeassistant timemachine your-spotify prometheus alertmanager grafana node-exporter cadvisor smartctl-exporter qbittorrent-exporter varnish iperf3 ollama openwebui test n8n && docker system prune -a -f
 0 4 * * * docker restart qbittorrent
 0 * * * * rsync -avz --exclude-from=/bkp/docker/rsync-excludes.txt -e "ssh -i ~nahuel/.ssh/id_rsa" /bkp/docker/ nahuel@koko-dev:/bkp/docker/
 0 * * * * rsync -avz -e "ssh -i ~nahuel/.ssh/id_rsa" ~nahuel/.ssh/id_rsa* nahuel@koko-dev:~nahuel/.ssh/
+## Old crontab entries
 # 0 10 * * * hdparm -S 15 /dev/sdc
 # 0 10 * * * hdparm -S 15 /dev/sdc1
+# 0 3 * * * rsync -avx /bkp /usb/apollo/ --delete
+#*/10 * * * * /bkp/fixPrivilegesMovies.sh

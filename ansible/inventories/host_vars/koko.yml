@@ -17,7 +17,7 @@ lvs:
     swap: true
   - name: docker-lv
     vg: ssd-vg
-    size: 40G
+    size: 50G
     mount: /var/lib/docker
     fstype: ext4
   - name: bkp-ssd-lv

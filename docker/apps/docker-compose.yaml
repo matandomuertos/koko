@@ -280,7 +280,7 @@ services:
 
   your-spotify-mongo-mongo:
     profiles: [prod]
-    image: mongo:6
+    image: mongo:6.0.26
     container_name: your-spotify-mongo
     restart: unless-stopped
     networks:
@@ -564,6 +564,7 @@ services:
   varnish-exporter:
     profiles: [prod]
     image: varnish-exporter:local
+    pull_policy: never
     container_name: varnish-exporter
     depends_on:
       - varnish
