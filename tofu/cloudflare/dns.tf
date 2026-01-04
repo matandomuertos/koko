@@ -42,6 +42,15 @@ resource "cloudflare_dns_record" "all_private_k3d" {
   proxied = false
 }
 
+resource "cloudflare_dns_record" "all_private_k3d_dev" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "*.k3d.dev"
+  ttl     = 1 #auto
+  type    = "A"
+  content = var.koko_k3d_dev_ip
+  proxied = false
+}
+
 resource "cloudflare_dns_record" "proxmox" {
   zone_id = cloudflare_zone.wyppu.id
   name    = "proxmox"
