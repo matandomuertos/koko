@@ -1,0 +1,4 @@
+- name: Install rclone via official script
+  shell: curl -fsSL https://rclone.org/install.sh | bash
+  args:
+    creates: /usr/bin/rclone

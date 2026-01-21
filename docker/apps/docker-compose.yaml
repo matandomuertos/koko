@@ -44,8 +44,6 @@ networks:
     driver: bridge
   your-spotify:
     driver: bridge
-  varnish:
-    driver: bridge
 
 services:
   ### APPS ###
@@ -166,7 +164,7 @@ services:
 
   vaultwarden:
     profiles: [prod]
-    image: vaultwarden/server:1.33.2-alpine
+    image: vaultwarden/server:1.35.2-alpine
     container_name: vaultwarden
     restart: unless-stopped
     environment:
@@ -215,8 +213,8 @@ services:
 
   homeassistant:
     profiles: [prod]
-    container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
     restart: unless-stopped
     environment:
       DISABLE_JEMALLOC: true
@@ -238,8 +236,8 @@ services:
 
   timemachine:
     profiles: [prod]
-    container_name: timemachine
     image: mbentley/timemachine:smb
+    container_name: timemachine
     restart: unless-stopped
     network_mode: host
     environment:
@@ -261,8 +259,8 @@ services:
 
   rclone-mount:
     profiles: [prod]
-    container_name: rclone-mount
     image: mumiehub/rclone-mount:v1.69.1
+    container_name: rclone-mount
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
@@ -315,34 +313,6 @@ services:
       - "traefik.http.routers.spotify.middlewares=spotify-whitelist"
       - "traefik.http.middlewares.spotify-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-  varnish:
-    profiles: [prod]
-    image: varnish:latest
-    container_name: varnish
-    restart: unless-stopped
-    networks:
-      - varnish
-      - koko-dashboard-ui
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cache.rule=Host(`cache.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
-      - "traefik.http.services.cache.loadbalancer.server.port=80"
-      - "traefik.http.routers.cache.entrypoints=websecure"
-      - "traefik.http.routers.cache.tls.certresolver=cloudflare"
-      - "traefik.http.routers.cache.middlewares=cache-whitelist"
-      - "traefik.http.middlewares.cache-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-    tmpfs:
-      - /var/lib/varnish/varnishd:exec
-    volumes:
-      - /bkp/docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
-    command: >
-      varnishd
-      -F
-      -a :80
-      -T :6082
-      -f /etc/varnish/default.vcl
-      -s malloc,512m
-
   test:
     profiles: [prod, dev]
     image: nginxdemos/hello:latest
@@ -360,10 +330,9 @@ services:
       - "traefik.http.middlewares.test-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   ### Networking ###
-
   traefik:
     profiles: [prod, dev]
-    image: traefik:3.6.1
+    image: traefik:3.6.7
     container_name: traefik
     restart: always
     environment:
@@ -411,12 +380,11 @@ services:
       - portainer
       - n8n
       - your-spotify
-      - varnish
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`) || Host(`tk.pub.${DOMAIN}`)"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-      - "traefik.http.routers.treafik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik.middlewares=traefik-whitelist"
       - "traefik.http.middlewares.traefik-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
@@ -434,7 +402,6 @@ services:
       - "5201:5201"
 
   ### Monitoring ###
-
   prometheus:
     profiles: [prod]
     image: prom/prometheus:latest
@@ -504,7 +471,6 @@ services:
       - "traefik.http.middlewares.grafana-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   ### Exporters ###
-
   node-exporter:
     profiles: [prod]
     image: prom/node-exporter:latest
@@ -560,20 +526,6 @@ services:
       - /bkp/docker/monitoring/proxmox.yml:/etc/prometheus/pve.yml
     networks:
       - monitoring
-
-  varnish-exporter:
-    profiles: [prod]
-    image: varnish-exporter:local
-    pull_policy: never
-    container_name: varnish-exporter
-    depends_on:
-      - varnish
-    networks:
-      - monitoring
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command:
-      - "-docker-container-name=varnish"
 
   ### AI ####
   ollama:
@@ -712,3 +664,65 @@ services:
   #    - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
   #    - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
   #    - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
+  # rclone-mount-proton:
+  #   profiles: [prod]
+  #   image: mumiehub/rclone-mount:v1.69.1
+  #   container_name: rclone-mount-proton
+  #   restart: unless-stopped
+  #   cap_add:
+  #     - SYS_ADMIN
+  #   security_opt:
+  #     - "apparmor:unconfined"
+  #   volumes:
+  #     - "/bkp/docker/rclone/config-proton:/config"
+  #     - "/rclone/proton:/mnt/mediaefs:shared"
+  #     - /rclone/cache:/cache
+  #   devices:
+  #     - /dev/fuse
+  #   environment:
+  #     - "RemotePath=protondrive:"
+  #     - "MountCommands=--read-only --allow-other --allow-non-empty --vfs-cache-mode minimal --vfs-cache-max-size 10G --vfs-cache-max-age 48h --dir-cache-time 2h --poll-interval 2m --buffer-size 16M --vfs-read-chunk-size 16M --vfs-read-chunk-size-limit 256M --transfers 2 --checkers 2 --attr-timeout 1s --log-level INFO"
+  #     - "ConfigName=rclone.conf"
+
+  # varnish-exporter:
+  #   profiles: [prod]
+  #   image: varnish-exporter:local
+  #   pull_policy: never
+  #   container_name: varnish-exporter
+  #   depends_on:
+  #     - varnish
+  #   networks:
+  #     - monitoring
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   command:
+  #     - "-docker-container-name=varnish"
+
+  # varnish:
+  #   profiles: [prod]
+  #   image: varnish:latest
+  #   container_name: varnish
+  #   restart: unless-stopped
+  #   networks:
+  #     - varnish
+  #     - koko-dashboard-ui
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.cache.rule=Host(`cache.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+  #     - "traefik.http.services.cache.loadbalancer.server.port=80"
+  #     - "traefik.http.routers.cache.entrypoints=websecure"
+  #     - "traefik.http.routers.cache.tls.certresolver=cloudflare"
+  #     - "traefik.http.routers.cache.middlewares=cache-whitelist"
+  #     - "traefik.http.middlewares.cache-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+  #   tmpfs:
+  #     - /var/lib/varnish/varnishd:exec
+  #   volumes:
+  #     - /bkp/docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
+  #   command: >
+  #     varnishd
+  #     -F
+  #     -a :80
+  #     -T :6082
+  #     -f /etc/varnish/default.vcl
+  #     -s malloc,512m
