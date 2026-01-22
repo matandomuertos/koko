@@ -86,3 +86,72 @@ resource "cloudflare_dns_record" "cname" {
   content = var.zone_name
   proxied = false
 }
+
+resource "cloudflare_dns_record" "proton_mail_txt" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "@"
+  ttl     = 1 #auto
+  type    = "TXT"
+  content = "\"protonmail-verification=9b8f1870044059bf761f1527c61ece0ecada728f\""
+}
+
+resource "cloudflare_dns_record" "proton_mail_mx" {
+  zone_id  = cloudflare_zone.wyppu.id
+  name     = "@"
+  ttl      = 1 #auto
+  type     = "MX"
+  content  = "mail.protonmail.ch"
+  priority = 10
+}
+
+resource "cloudflare_dns_record" "proton_mail_mx2" {
+  zone_id  = cloudflare_zone.wyppu.id
+  name     = "@"
+  ttl      = 1 #auto
+  type     = "MX"
+  content  = "mailsec.protonmail.ch"
+  priority = 20
+}
+
+resource "cloudflare_dns_record" "proton_spf" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "@"
+  ttl     = 1 #auto
+  type    = "TXT"
+  content = "\"v=spf1 include:_spf.protonmail.ch ~all\""
+}
+
+resource "cloudflare_dns_record" "proton_dkim" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "protonmail._domainkey"
+  ttl     = 1 #auto
+  type    = "CNAME"
+  content = "protonmail3.domainkey.d7dn3gsssmknuw3ir5qzpusy5de2yuysxwln7o4uwwwxylnpxw2fa.domains.proton.ch"
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "proton_dkim2" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "protonmail2._domainkey"
+  ttl     = 1 #auto
+  type    = "CNAME"
+  content = "protonmail2.domainkey.d7dn3gsssmknuw3ir5qzpusy5de2yuysxwln7o4uwwwxylnpxw2fa.domains.proton.ch"
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "proton_dkim3" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "protonmail3._domainkey"
+  ttl     = 1 #auto
+  type    = "CNAME"
+  content = "protonmail3.domainkey.d7dn3gsssmknuw3ir5qzpusy5de2yuysxwln7o4uwwwxylnpxw2fa.domains.proton.ch"
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "proton_dmarc" {
+  zone_id = cloudflare_zone.wyppu.id
+  name    = "_dmarc"
+  ttl     = 1 #auto
+  type    = "TXT"
+  content = "\"v=DMARC1; p=quarantine\""
+}
