@@ -126,7 +126,7 @@ resource "cloudflare_dns_record" "proton_dkim" {
   name    = "protonmail._domainkey"
   ttl     = 1 #auto
   type    = "CNAME"
-  content = "protonmail3.domainkey.d7dn3gsssmknuw3ir5qzpusy5de2yuysxwln7o4uwwwxylnpxw2fa.domains.proton.ch"
+  content = "protonmail.domainkey.d7dn3gsssmknuw3ir5qzpusy5de2yuysxwln7o4uwwwxylnpxw2fa.domains.proton.ch"
   proxied = false
 }
 
