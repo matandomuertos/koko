@@ -569,7 +569,7 @@ services:
 
   n8n:
     profiles: [prod]
-    image: docker.n8n.io/n8nio/n8n:latest
+    image: n8nio/n8n:stable
     container_name: n8n
     restart: unless-stopped
     volumes:
