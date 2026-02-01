@@ -528,44 +528,44 @@ services:
       - monitoring
 
   ### AI ####
-  ollama:
-    profiles: [prod]
-    image: ollama/ollama:latest
-    container_name: ollama
-    restart: unless-stopped
-    volumes:
-      - ollama:/root/.ollama
-    networks:
-      - ollama
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN}`) || Host(`ollama.pub.${DOMAIN}`)"
-      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
-      - "traefik.http.routers.ollama.entrypoints=websecure"
-      - "traefik.http.routers.ollama.tls.certresolver=cloudflare"
-      - "traefik.http.routers.ollama.middlewares=ollama-whitelist"
-      - "traefik.http.middlewares.ollama-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+  # ollama:
+  #   profiles: [prod]
+  #   image: ollama/ollama:latest
+  #   container_name: ollama
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ollama:/root/.ollama
+  #   networks:
+  #     - ollama
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN}`) || Host(`ollama.pub.${DOMAIN}`)"
+  #     - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+  #     - "traefik.http.routers.ollama.entrypoints=websecure"
+  #     - "traefik.http.routers.ollama.tls.certresolver=cloudflare"
+  #     - "traefik.http.routers.ollama.middlewares=ollama-whitelist"
+  #     - "traefik.http.middlewares.ollama-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
-  openwebui:
-    profiles: [prod]
-    image: ghcr.io/open-webui/open-webui:latest
-    container_name: open-webui
-    restart: unless-stopped
-    volumes:
-      - open-webui:/app/backend/data
-    networks:
-      - ollama
-    environment:
-      # - "OLLAMA_BASE_URL=http://192.168.0.51:11434" #TEST internal host
-      - "OLLAMA_BASE_URL=http://ollama:11434"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.openwebui.rule=Host(`open-webui.${DOMAIN}`) || Host(`open-webui.pub.${DOMAIN}`)"
-      - "traefik.http.services.openwebui.loadbalancer.server.port=8080"
-      - "traefik.http.routers.openwebui.entrypoints=websecure"
-      - "traefik.http.routers.openwebui.tls.certresolver=cloudflare"
-      - "traefik.http.routers.openwebui.middlewares=openwebui-whitelist"
-      - "traefik.http.middlewares.openwebui-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+  # openwebui:
+  #   profiles: [prod]
+  #   image: ghcr.io/open-webui/open-webui:latest
+  #   container_name: open-webui
+  #   restart: unless-stopped
+  #   volumes:
+  #     - open-webui:/app/backend/data
+  #   networks:
+  #     - ollama
+  #   environment:
+  #     # - "OLLAMA_BASE_URL=http://192.168.0.51:11434" #TEST internal host
+  #     - "OLLAMA_BASE_URL=http://ollama:11434"
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.openwebui.rule=Host(`open-webui.${DOMAIN}`) || Host(`open-webui.pub.${DOMAIN}`)"
+  #     - "traefik.http.services.openwebui.loadbalancer.server.port=8080"
+  #     - "traefik.http.routers.openwebui.entrypoints=websecure"
+  #     - "traefik.http.routers.openwebui.tls.certresolver=cloudflare"
+  #     - "traefik.http.routers.openwebui.middlewares=openwebui-whitelist"
+  #     - "traefik.http.middlewares.openwebui-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   n8n:
     profiles: [prod]

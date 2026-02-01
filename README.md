@@ -34,6 +34,7 @@ $ ansible-playbook playbooks/init-kokopve.yml -i inventories/hosts.yml --ask-bec
 ```
 - The `--ask-become-pass` option is required if your user is not root.
 - You can run with `--check --diff` to see what changes would be applied without making them.
+- If `koko` is already configured, you can change `--ask-become-pass` for `--extra-vars "@/bkp/ansible/secrets.yml"`
 
 ### Terragrunt
 #### Deploy Proxmox Base config
