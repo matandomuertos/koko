@@ -30,8 +30,9 @@ generate "backend.tf" {
   path      = "backend.tf"
   if_exists = "overwrite_terragrunt"
   contents = templatefile("backend.tf.tpl", {
-    bucket      = local.backend_vars.locals.bucket
-    key         = local.bucket_key_path
+    bucket = local.backend_vars.locals.bucket
+    key    = local.bucket_key_path
+
     access_key  = local.backend_vars.locals.access_key
     secret_key  = local.backend_vars.locals.secret_key
     s3_endpoint = local.backend_vars.locals.endpoints.s3
