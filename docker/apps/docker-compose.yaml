@@ -47,25 +47,41 @@ networks:
 
 services:
   ### APPS ###
-  qbittorrent:
+  qbittorrent-vpn:
     profiles: [prod, dev]
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
+    image: binhex/arch-qbittorrentvpn
+    container_name: qbittorrent-vpn
     restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
     environment:
+      - VPN_ENABLED=yes
+      - VPN_USER=${QBIT_VPN_USER}+pmp
+      - VPN_PASS=${QBIT_VPN_PASS}
+      - VPN_PROV=protonvpn
+      - VPN_CLIENT=wireguard
+      - STRICT_PORT_FORWARD=no
+      - ENABLE_PRIVOXY=no
+      - ENABLE_STARTUP_SCRIPTS=no
+      - LAN_NETWORK=${LAN_NETWORK}
+      - DEBUG=true
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Warsaw
-      - WEBUI_PORT=8081
+    devices:
+      - /dev/net/tun
+    privileged: true
     volumes:
       - /bkp/docker/qbittorrentconfig:/config
-      - /downloads/qbittorrent:/downloads
+      - /download/qbittorrent:/data
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - qbittorrent
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
-      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`)"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
       - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
@@ -86,7 +102,7 @@ services:
     network_mode: host
     labels:
       - "traefik.enable=true" # Actually, it's not working without port (plex.${DOMAIN}:32400) because plex doesn't like reverse proxies
-      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN}`) || Host(`plex.pub.${DOMAIN}`)"
+      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN}`)"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
       - "traefik.http.routers.plex.entrypoints=websecure"
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"
@@ -107,7 +123,7 @@ services:
       - gitea
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`) || Host(`git.pub.${DOMAIN}`)"
+      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
@@ -125,7 +141,7 @@ services:
       - uptime-kuma
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.${DOMAIN}`) || Host(`kuma.pub.${DOMAIN}`)"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`kuma.${DOMAIN}`)"
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
       - "traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare"
@@ -144,7 +160,7 @@ services:
       - koko-dashboard-api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`koko.${DOMAIN}`) || Host(`koko.pub.${DOMAIN}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`koko.${DOMAIN}`)"
       - "traefik.http.services.dashboard.loadbalancer.server.port=80"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
@@ -164,7 +180,7 @@ services:
 
   vaultwarden:
     profiles: [prod]
-    image: vaultwarden/server:1.35.2-alpine
+    image: vaultwarden/server:1.35.4-alpine
     container_name: vaultwarden
     restart: unless-stopped
     environment:
@@ -176,7 +192,7 @@ services:
       - vaultwarden
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vw.${DOMAIN}`) || Host(`vw.pub.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vw.${DOMAIN}`)"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
       - "traefik.http.routers.vaultwarden.entrypoints=websecure"
       - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
@@ -196,14 +212,14 @@ services:
       - portainer
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`) || Host(`portainer.pub.${DOMAIN}`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
       - "traefik.http.routers.portainer.service=portainer"
       - "traefik.http.routers.portainer.middlewares=portainer-whitelist"
       - "traefik.http.middlewares.portainer-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-      - "traefik.http.routers.edge.rule=Host(`edge.${DOMAIN}`) || Host(`edge.pub.${DOMAIN}`)"
+      - "traefik.http.routers.edge.rule=Host(`edge.${DOMAIN}`)"
       - "traefik.http.services.edge.loadbalancer.server.port=8000"
       - "traefik.http.routers.edge.entrypoints=websecure"
       - "traefik.http.routers.edge.tls.certresolver=cloudflare"
@@ -229,7 +245,7 @@ services:
     network_mode: host
     labels:
       - "traefik.enable=true" # Actually not using Traefik, it's node port in 8123
-      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${DOMAIN}`) || Host(`homeassistant.pub.${DOMAIN}`)"
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${DOMAIN}`)"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls.certresolver=cloudflare"
@@ -259,7 +275,7 @@ services:
 
   rclone-mount:
     profiles: [prod]
-    image: mumiehub/rclone-mount:v1.69.1
+    image: mumiehub/rclone-mount:v1.73.0
     container_name: rclone-mount
     restart: unless-stopped
     cap_add:
@@ -306,7 +322,7 @@ services:
       - MONGO_ENDPOINT=mongodb://your-spotify-mongo-mongo:27017/your_spotify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.spotify.rule=Host(`spotify.${DOMAIN}`) || Host(`spotify.pub.${DOMAIN}`)"
+      - "traefik.http.routers.spotify.rule=Host(`spotify.${DOMAIN}`)"
       - "traefik.http.services.spotify.loadbalancer.server.port=80"
       - "traefik.http.routers.spotify.entrypoints=websecure"
       - "traefik.http.routers.spotify.tls.certresolver=cloudflare"
@@ -322,7 +338,7 @@ services:
       - test
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`) || Host(`test.pub.${DOMAIN}`)"
+      - "traefik.http.routers.test.rule=Host(`test.${DOMAIN}`)"
       - "traefik.http.services.test.loadbalancer.server.port=80"
       - "traefik.http.routers.test.entrypoints=websecure"
       - "traefik.http.routers.test.tls.certresolver=cloudflare"
@@ -332,7 +348,7 @@ services:
   ### Networking ###
   traefik:
     profiles: [prod, dev]
-    image: traefik:3.6.7
+    image: traefik:3.6.9
     container_name: traefik
     restart: always
     environment:
@@ -382,7 +398,7 @@ services:
       - your-spotify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`) || Host(`tk.pub.${DOMAIN}`)"
+      - "traefik.http.routers.traefik.rule=Host(`tk.${DOMAIN}`)"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
@@ -419,7 +435,7 @@ services:
       - monitoring
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`) || Host(`prometheus.pub.${DOMAIN}`)"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`)"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
@@ -439,7 +455,7 @@ services:
       - monitoring
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.${DOMAIN}`) || Host(`alertmanager.pub.${DOMAIN}`)"
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.${DOMAIN}`)"
       - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
       - "traefik.http.routers.alertmanager.entrypoints=websecure"
       - "traefik.http.routers.alertmanager.tls.certresolver=cloudflare"
@@ -463,7 +479,7 @@ services:
       - monitoring
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`) || Host(`grafana.pub.${DOMAIN}`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
@@ -503,19 +519,19 @@ services:
     networks:
       - monitoring
 
-  qbittorrent-exporter:
-    profiles: [prod]
-    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
-    container_name: qbittorrent-exporter
-    restart: unless-stopped
-    environment:
-      - QBITTORRENT_PORT=8081
-      - QBITTORRENT_HOST=qbittorrent
-    depends_on:
-      - qbittorrent
-    networks:
-      - monitoring
-      - qbittorrent
+  # qbittorrent-exporter:
+  #   profiles: [prod]
+  #   image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
+  #   container_name: qbittorrent-exporter
+  #   restart: unless-stopped
+  #   environment:
+  #     - QBITTORRENT_PORT=8080
+  #     - QBITTORRENT_HOST=qbittorrent-vpn
+  #   depends_on:
+  #     - qbittorrent-vpn
+  #   networks:
+  #     - monitoring
+  #     - qbittorrent
 
   proxmox-exporter:
     profiles: [prod]
@@ -578,7 +594,7 @@ services:
       - n8n
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.n8n.rule=Host(`n8.${DOMAIN}`) || Host(`n8.pub.${DOMAIN}`)"
+      - "traefik.http.routers.n8n.rule=Host(`n8.${DOMAIN}`)"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls.certresolver=cloudflare"
@@ -595,6 +611,30 @@ services:
 
   ###################################################################
   ### OLD SERVICES ###
+  # qbittorrent:
+  #   profiles: [prod, dev]
+  #   image: lscr.io/linuxserver/qbittorrent:latest
+  #   container_name: qbittorrent
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/Warsaw
+  #     - WEBUI_PORT=8081
+  #   volumes:
+  #     - /bkp/docker/qbittorrentconfig:/config
+  #     - /downloads/qbittorrent:/downloads
+  #   networks:
+  #     - qbittorrent
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
+  #     - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
+  #     - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+  #     - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+  #     - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
+  #     - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
+
   # cftunnel:
   #   image: cloudflare/cloudflared:2023.5.1
   #   container_name: cftunnel
@@ -630,40 +670,6 @@ services:
   #    - "traefik.http.routers.pihole.tls.certresolver=cloudflare"
   #    - "traefik.http.routers.pihole.middlewares=pihole-whitelist"
   #    - "traefik.http.middlewares.pihole-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
-
-  #qbittorrent-vpn:
-  #  image: binhex/arch-qbittorrentvpn
-  #  container_name: qbittorrent-vpn
-  #  restart: unless-stopped
-  #  cap_add:
-  #    - NET_ADMIN
-  #  environment:
-  #    - VPN_ENABLED=yes
-  #    - VPN_USER=${NORDVPN_USER}
-  #    - VPN_PASS=${NORDVPN_PASS}
-  #    - VPN_PROV=custom
-  #    - VPN_CLIENT=openvpn
-  #    - ENABLE_STARTUP_SCRIPTS=no
-  #    - LAN_NETWORK=${LAN_NETWORK}
-  #    - DEBUG=true
-  #    - PUID=1000
-  #    - PGID=1000
-  #  devices:
-  #    - /dev/net/tun
-  #  volumes:
-  #    - /bkp/docker/qbittorrentconfig:/config
-  #    - /download/qbittorrent:/data
-  #    - /etc/localtime:/etc/localtime:ro
-  #  networks:
-  #    - qbittorrent
-  #  labels:
-  #    - "traefik.enable=true"
-  #    - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN}`) || Host(`qb.pub.${DOMAIN}`)"
-  #    - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
-  #    - "traefik.http.routers.qbittorrent.entrypoints=websecure"
-  #    - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
-  #    - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-whitelist"
-  #    - "traefik.http.middlewares.qbittorrent-whitelist.ipwhitelist.sourcerange=${WHITELIST_IP}"
 
   # rclone-mount-proton:
   #   profiles: [prod]
